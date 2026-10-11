@@ -1,0 +1,236 @@
+"""
+Local Development & API Proxy Server for KhanPro.me
+Serves static frontend and proxies /api/* calls to Cloudflare Email Routing API
+"""
+import http.server
+import socketserver
+import urllib.request
+import urllib.error
+import json
+import os
+
+PORT = 8080
+ACCOUNT_ID = os.environ.get("CF_ACCOUNT_ID", "24c0dbe8161ec51bd07d1b0397c6d315")
+ZONE_ID = os.environ.get("CF_ZONE_ID", "bdc1725e110f146b6739d6a16605a29c")
+API_TOKEN = os.environ.get("CF_API_TOKEN", "")
+if not API_TOKEN:
+    # Try reading from local .env if available
+    try:
+        if os.path.exists(".env"):
+            with open(".env") as f:
+                for line in f:
+                    if line.startswith("CF_API_TOKEN="):
+                        API_TOKEN = line.strip().split("=", 1)[1]
+    except Exception:
+        pass
+
+class KhanProHandler(http.server.SimpleHTTPRequestHandler):
+    def send_cors_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_cors_headers()
+        self.end_headers()
+
+    def do_GET(self):
+        if self.path.startswith("/api/"):
+            self.handle_api_get()
+        else:
+            super().do_GET()
+
+    def do_POST(self):
+        if self.path.startswith("/api/"):
+            self.handle_api_post()
+        else:
+            self.send_error(404, "Not Found")
+
+    def handle_api_get(self):
+        path = self.path.split("?")[0]
+        query = self.path.split("?")[1] if "?" in self.path else ""
+
+        if path == "/api/health":
+            self.send_json(200, {"status": "ok", "service": "khanpro-local-proxy"})
+            return
+
+        if path == "/api/check-status":
+            params = dict(qc.split("=") for qc in query.split("&") if "=" in qc)
+            email = urllib.parse.unquote(params.get("email", "")).strip().lower()
+
+            if not email:
+                self.send_json(400, {"error": "Missing email query param"})
+                return
+
+            try:
+                url = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/email/routing/addresses"
+                req = urllib.request.Request(url, headers={"Authorization": f"Bearer {API_TOKEN}"})
+                with urllib.request.urlopen(req) as resp:
+                    data = json.loads(resp.read().decode())
+                
+                matched = next((item for item in data.get("result", []) if item.get("email", "").lower() == email), None)
+                if not matched:
+                    self.send_json(200, {
+                        "found": False,
+                        "verified": False,
+                        "status": "not_found",
+                        "message": "Destination address not found."
+                    })
+                    return
+
+                is_verified = matched.get("status") == "verified" or bool(matched.get("verified"))
+                self.send_json(200, {
+                    "found": True,
+                    "email": matched.get("email"),
+                    "verified": is_verified,
+                    "status": "verified" if is_verified else "unverified",
+                    "verifiedAt": matched.get("verified")
+                })
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if path == "/api/list-destinations":
+            try:
+                url = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/email/routing/addresses"
+                req = urllib.request.Request(url, headers={"Authorization": f"Bearer {API_TOKEN}"})
+                with urllib.request.urlopen(req) as resp:
+                    data = json.loads(resp.read().decode())
+                
+                destinations = [{
+                    "email": item.get("email"),
+                    "verified": item.get("status") == "verified" or bool(item.get("verified")),
+                    "created": item.get("created"),
+                    "status": item.get("status")
+                } for item in data.get("result", [])]
+
+                self.send_json(200, {"success": True, "destinations": destinations})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        self.send_json(404, {"error": "API route not found"})
+
+    def handle_api_post(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_length).decode()
+        try:
+            data = json.loads(body) if body else {}
+        except Exception:
+            self.send_json(400, {"error": "Invalid JSON body"})
+            return
+
+        if self.path == "/api/send-verification":
+            email = data.get("email", "").strip().lower()
+            if not email or "@" not in email:
+                self.send_json(400, {"error": "Valid email address is required"})
+                return
+
+            try:
+                url = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/email/routing/addresses"
+                payload = json.dumps({"email": email}).encode()
+                req = urllib.request.Request(
+                    url,
+                    data=payload,
+                    headers={
+                        "Authorization": f"Bearer {API_TOKEN}",
+                        "Content-Type": "application/json"
+                    }
+                )
+                with urllib.request.urlopen(req) as resp:
+                    res_data = json.loads(resp.read().decode())
+
+                self.send_json(200, {
+                    "success": True,
+                    "email": email,
+                    "status": res_data.get("result", {}).get("status", "unverified"),
+                    "message": "Verification email sent successfully! Please check your Gmail."
+                })
+            except urllib.error.HTTPError as err:
+                raw_err = err.read().decode()
+                try:
+                    err_json = json.loads(raw_err)
+                    msg = err_json.get("errors", [{}])[0].get("message", "Cloudflare error")
+                    if "already exists" in msg.lower() or any(e.get("code") == 2005 for e in err_json.get("errors", [])):
+                        self.send_json(200, {
+                            "success": True,
+                            "alreadyExists": True,
+                            "email": email,
+                            "message": "Destination address already registered in Cloudflare. Check inbox for verification link."
+                        })
+                        return
+                    self.send_json(400, {"error": msg, "details": err_json})
+                except Exception:
+                    self.send_json(400, {"error": raw_err})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if self.path == "/api/create-rule":
+            alias = data.get("alias", "").strip().lower()
+            destination = data.get("destination", "").strip().lower()
+
+            if not alias or not destination:
+                self.send_json(400, {"error": "Alias and destination email are required"})
+                return
+
+            if not alias.endswith("@khanpro.me"):
+                alias = f"{alias}@khanpro.me"
+
+            try:
+                url = f"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/email/routing/rules"
+                payload = json.dumps({
+                    "name": f"Direct Rule: {alias}",
+                    "matchers": [{"type": "literal", "field": "to", "value": alias}],
+                    "actions": [{"type": "forward", "value": [destination]}],
+                    "enabled": True,
+                    "priority": 1
+                }).encode()
+                req = urllib.request.Request(
+                    url,
+                    data=payload,
+                    headers={
+                        "Authorization": f"Bearer {API_TOKEN}",
+                        "Content-Type": "application/json"
+                    }
+                )
+                with urllib.request.urlopen(req) as resp:
+                    res_data = json.loads(resp.read().decode())
+
+                self.send_json(200, {
+                    "success": True,
+                    "alias": alias,
+                    "destination": destination,
+                    "ruleId": res_data.get("result", {}).get("id"),
+                    "message": f"Direct forward rule active: {alias} -> {destination}"
+                })
+            except urllib.error.HTTPError as err:
+                raw_err = err.read().decode()
+                try:
+                    err_json = json.loads(raw_err)
+                    msg = err_json.get("errors", [{}])[0].get("message", "Rule creation error")
+                    self.send_json(400, {"error": msg, "details": err_json})
+                except Exception:
+                    self.send_json(400, {"error": raw_err})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        self.send_json(404, {"error": "API route not found"})
+
+    def send_json(self, status_code, data):
+        self.send_response(status_code)
+        self.send_cors_headers()
+        self.send_header("Content-Type", "application/json")
+        encoded = json.dumps(data).encode("utf-8")
+        self.send_header("Content-Length", str(len(encoded)))
+        self.end_headers()
+        self.wfile.write(encoded)
+
+if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), KhanProHandler) as httpd:
+        print(f"[KhanPro Local Proxy] Running on http://localhost:{PORT}")
+        httpd.serve_forever()

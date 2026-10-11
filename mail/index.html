@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KhanPro | Next-Gen Web Tools & Student Infrastructure</title>
+  <meta name="description" content="KhanPro.me - Professional web utilities, developer tools, and high-performance student email routing infrastructure powered by Cloudflare Edge.">
+  
+  <!-- Modern Typography: Outfit & Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Gradient Background Elements -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-brand" id="nav-brand-logo">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">KHANPRO</span><span class="brand-tld">.ME</span>
+        </div>
+      </a>
+
+      <div class="nav-links" id="nav-menu">
+        <a href="#home" class="nav-link active" data-nav="home"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#tools" class="nav-link" data-nav="tools"><i class="fa-solid fa-toolbox"></i> Web Tools</a>
+        <a href="#student-mail" class="nav-link special-link" data-nav="student-mail">
+          <i class="fa-solid fa-envelope-circle-check"></i> Student Mail Portal
+          <span class="badge-hot">Core</span>
+        </a>
+        <a href="#admin-panel" class="nav-link" data-nav="admin-panel"><i class="fa-solid fa-sliders"></i> Cluster Admin</a>
+      </div>
+
+      <div class="nav-actions">
+        <div class="status-indicator" title="Cloudflare Edge Forwarding Active">
+          <span class="status-dot"></span>
+          <span class="status-label">Edge Online</span>
+        </div>
+        <button class="btn btn-primary btn-sm" id="quick-activate-btn">
+          <i class="fa-solid fa-plus"></i> Activate Mail
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Wrapper -->
+  <main class="main-content">
+    
+    <!-- ======================================================== -->
+    <!-- SECTION 1: HERO SECTION                                  -->
+    <!-- ======================================================== -->
+    <section class="hero-section" id="home">
+      <div class="container hero-container">
+        <div class="hero-badge">
+          <span class="badge-icon"><i class="fa-solid fa-microchip"></i></span>
+          <span class="badge-text">Cloudflare Powered Student Mail Engine & Tools Ecosystem</span>
+        </div>
+
+        <h1 class="hero-title">
+          Scale Your Campus Mail & Web Tools at <span class="gradient-text">Zero Cost.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          High-reputation forwarding infrastructure for <strong>khanpro.me</strong>. Create unlimited custom roll-number emails, link them to verified Gmail clusters, receive OTPs without delivery lag, and explore powerful free web utilities.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#student-mail" class="btn btn-primary btn-lg" id="hero-cta-mail">
+            <i class="fa-solid fa-graduation-cap"></i> Student Mail Portal
+          </a>
+          <a href="#tools" class="btn btn-glass btn-lg" id="hero-cta-tools">
+            <i class="fa-solid fa-compass"></i> Explore All Tools
+          </a>
+        </div>
+
+        <!-- Live Statistics Ribbon -->
+        <div class="stats-ribbon">
+          <div class="stat-card">
+            <div class="stat-icon-wrap"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="stat-students-count">500+</span>
+              <span class="stat-label">Student Capacity</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap"><i class="fa-brands fa-google"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="stat-gmail-count">100%</span>
+              <span class="stat-label">Gmail Clustered</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="stat-info">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Domain Trust</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap"><i class="fa-solid fa-bolt"></i></div>
+            <div class="stat-info">
+              <span class="stat-number">&lt; 0.5s</span>
+              <span class="stat-label">Routing Latency</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 2: STUDENT MAIL FLAGSHIP ENGINE                  -->
+    <!-- ======================================================== -->
+    <section class="section mail-engine-section" id="student-mail">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-tag"><i class="fa-solid fa-envelope-open-text"></i> Flagship System</div>
+          <h2 class="section-title">Student Mail Routing Engine</h2>
+          <p class="section-subtitle">
+            Instantly assign a <code>@khanpro.me</code> identity. Pick from verified Gmail routing clusters or connect a custom personal inbox.
+          </p>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- PERMISSION GATE: RESTRICTED ACCESS SCREEN                -->
+        <!-- ======================================================== -->
+        <div class="permission-gate-card glass-panel" id="mail-permission-gate">
+          <div class="gate-icon-wrap">
+            <i class="fa-solid fa-lock-open-slash" id="gate-lock-icon"></i>
+          </div>
+          <div class="gate-content">
+            <div class="gate-tag"><i class="fa-solid fa-shield-halved"></i> Restricted Campus Service</div>
+            <h3 class="gate-title">Student Mail Infrastructure is Protected</h3>
+            <p class="gate-desc">
+              Public web tools are open to everyone, but the <strong>khanpro.me</strong> email routing engine is private. Enter the Student Passkey or Admin Key issued by the administrator to unlock access.
+            </p>
+
+            <form id="passkey-unlock-form" class="gate-form">
+              <div class="input-addon-group gate-input-wrap">
+                <span class="addon-prefix"><i class="fa-solid fa-key"></i></span>
+                <input type="password" id="gate-passkey-input" class="form-input" placeholder="Enter Access Passkey (e.g. STUDENT-2026)" required autocomplete="off">
+                <button type="submit" class="btn btn-primary" id="btn-unlock-gate">
+                  <i class="fa-solid fa-unlock"></i> Unlock Access
+                </button>
+              </div>
+              <div class="gate-hint">
+                <span><i class="fa-solid fa-circle-info"></i> Default Student Key: <code>STUDENT-2026</code> | Master Admin: <code>ADMIN-2026</code></span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- AUTHORIZED CONTENT CONTAINER (HIDDEN UNTIL UNLOCKED)    -->
+        <!-- ======================================================== -->
+        <div class="authorized-mail-wrapper hidden" id="authorized-mail-area">
+          <div class="session-badge-bar">
+            <div class="session-info">
+              <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> <span id="session-role-text">Student Access Authorized</span></span>
+              <span class="session-tag" id="session-passkey-display">Passkey Active</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-lock-session">
+              <i class="fa-solid fa-lock"></i> Lock & Log Out
+            </button>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <div class="engine-tabs-wrapper">
+            <div class="engine-tabs" role="tablist">
+              <button class="engine-tab-btn active" data-tab="tab-activation" id="tab-btn-activation">
+                <i class="fa-solid fa-user-plus"></i> 1. Self-Activation Portal
+              </button>
+              <button class="engine-tab-btn" data-tab="tab-simulator" id="tab-btn-simulator">
+                <i class="fa-solid fa-paper-plane"></i> 2. Live OTP Simulator
+              </button>
+              <button class="engine-tab-btn" data-tab="tab-directory" id="tab-btn-directory">
+                <i class="fa-solid fa-list-check"></i> 3. Active Mappings Directory
+              </button>
+            </div>
+          </div>
+
+        <!-- Tab 1: Self-Activation Portal -->
+        <div class="tab-pane active" id="tab-activation">
+          <div class="activation-card glass-panel">
+            <div class="activation-header">
+              <div class="activation-title-area">
+                <h3><i class="fa-solid fa-id-card"></i> Student Email Self-Service Setup</h3>
+                <p>Generate your custom institutional alias in 3 easy steps.</p>
+              </div>
+              <div class="domain-pill">
+                <i class="fa-solid fa-at"></i> @khanpro.me
+              </div>
+            </div>
+
+            <form id="student-activation-form" class="activation-form">
+              <!-- Step 1: Roll Number -->
+              <div class="form-group">
+                <label for="student-prefix" class="form-label">
+                  <span class="step-badge">1</span> Enter Roll Number or Custom Alias
+                </label>
+                <div class="input-addon-group">
+                  <span class="addon-prefix"><i class="fa-solid fa-user-graduate"></i></span>
+                  <input type="text" id="student-prefix" class="form-input" placeholder="e.g. bsf1900166 or ali.khan" required autocomplete="off">
+                  <span class="addon-suffix">@khanpro.me</span>
+                </div>
+                <span class="input-hint">No spaces or special symbols. Letters, numbers, dots, and hyphens only.</span>
+              </div>
+
+              <!-- Step 2: Choose Gmail Strategy -->
+              <div class="form-group">
+                <label class="form-label">
+                  <span class="step-badge">2</span> Select Where Codes & Emails Should Be Delivered
+                </label>
+                
+                <div class="gmail-strategy-selector">
+                  <label class="strategy-option active" id="strategy-label-cluster">
+                    <input type="radio" name="gmail-mode" value="cluster" checked>
+                    <div class="strategy-content">
+                      <div class="strategy-icon"><i class="fa-solid fa-server"></i></div>
+                      <div class="strategy-meta">
+                        <span class="strategy-title">Pick a Verified Cluster Gmail</span>
+                        <span class="strategy-desc">Zero verification delay. Instantly active.</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="strategy-option" id="strategy-label-custom">
+                    <input type="radio" name="gmail-mode" value="custom">
+                    <div class="strategy-content">
+                      <div class="strategy-icon"><i class="fa-solid fa-inbox"></i></div>
+                      <div class="strategy-meta">
+                        <span class="strategy-title">Use My Own Personal Gmail</span>
+                        <span class="strategy-desc">Requires 1-time Cloudflare verification link.</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Dropdown for Cluster Gmails -->
+                <div class="cluster-dropdown-wrapper" id="cluster-dropdown-block">
+                  <label for="cluster-gmail-select" class="sub-label">Choose Active Cluster Address:</label>
+                  <div class="select-wrapper">
+                    <select id="cluster-gmail-select" class="form-select">
+                      <!-- Populated via JS -->
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-chevron"></i>
+                  </div>
+                  <div class="cluster-capacity-indicator" id="cluster-capacity-info">
+                    <span class="indicator-bar"><span class="bar-fill" style="width: 35%"></span></span>
+                    <span class="indicator-text">Cluster Health: Normal load</span>
+                  </div>
+                </div>
+
+                <!-- Custom Gmail Input -->
+                <div class="custom-gmail-wrapper hidden" id="custom-gmail-block">
+                  <label for="custom-gmail-input" class="sub-label">Enter Your Personal Gmail Address:</label>
+                  <div class="input-addon-group">
+                    <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
+                    <input type="email" id="custom-gmail-input" class="form-input" placeholder="e.g. yourname@gmail.com">
+                    <button type="button" class="btn btn-secondary" id="btn-send-cf-verification">
+                      <i class="fa-solid fa-paper-plane"></i> Send Verification
+                    </button>
+                  </div>
+                  
+                  <div class="verification-notice alert alert-info" id="cf-verification-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Cloudflare will send an automatic 1-click confirmation link to your personal Gmail.</span>
+                  </div>
+
+                  <!-- Live Verification Status Card -->
+                  <div class="cf-status-box hidden" id="cf-status-box">
+                    <div class="cf-status-row">
+                      <span class="cf-status-indicator" id="cf-status-indicator">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Checking...
+                      </span>
+                      <button type="button" class="btn btn-sm btn-secondary" id="btn-check-cf-status">
+                        <i class="fa-solid fa-rotate"></i> Re-check Status
+                      </button>
+                    </div>
+                    <p class="cf-status-text" id="cf-status-text">
+                      Verification email sent! Check your inbox (or spam) and click the Cloudflare link.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Action -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg btn-glow" id="btn-submit-activation">
+                  <i class="fa-solid fa-check-double"></i> Activate Student Email Now
+                </button>
+              </div>
+            </form>
+
+            <!-- Success Notification Modal Card -->
+            <div class="success-card hidden" id="activation-success-card">
+              <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <h3>Email Successfully Activated!</h3>
+              <p>Your institutional email alias is live on Cloudflare Edge.</p>
+              
+              <div class="result-details-box">
+                <div class="result-row">
+                  <span class="result-label">Assigned Student Email:</span>
+                  <div class="result-value-badge">
+                    <span id="result-assigned-email">bsf1900166@khanpro.me</span>
+                    <button class="btn-copy" id="btn-copy-email" title="Copy to clipboard">
+                      <i class="fa-solid fa-copy"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="result-row">
+                  <span class="result-label">Destination Gmail:</span>
+                  <span class="result-destination" id="result-destination-email">batch1-portal@gmail.com</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-label">Status:</span>
+                  <span class="badge badge-success"><i class="fa-solid fa-bolt"></i> Ready for Signups</span>
+                </div>
+              </div>
+
+              <div class="activation-instructions">
+                <h4><i class="fa-solid fa-lightbulb"></i> How to receive verification codes:</h4>
+                <ol>
+                  <li>Go to your desired platform (Canva, Software, Portal, etc.) and enter your <code>@khanpro.me</code> email.</li>
+                  <li>Open the designated Gmail inbox.</li>
+                  <li>Search for <code>to:your_roll_number@khanpro.me</code> in Gmail search to locate your OTP instantly!</li>
+                </ol>
+              </div>
+
+              <div class="success-actions">
+                <button class="btn btn-secondary" id="btn-activate-another">
+                  <i class="fa-solid fa-rotate-left"></i> Activate Another Student
+                </button>
+                <button class="btn btn-primary" id="btn-test-in-simulator">
+                  <i class="fa-solid fa-vial"></i> Test In Simulator
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Live Simulator -->
+        <div class="tab-pane hidden" id="tab-simulator">
+          <div class="simulator-card glass-panel">
+            <div class="simulator-header">
+              <div>
+                <h3><i class="fa-solid fa-network-wired"></i> Live OTP & Email Forwarding Simulator</h3>
+                <p>Simulate sending a verification code to any student email and trace the edge routing pipe.</p>
+              </div>
+            </div>
+
+            <div class="simulator-grid">
+              <div class="simulator-sender-col">
+                <div class="form-group">
+                  <label class="form-label">Simulated Sender:</label>
+                  <input type="text" id="sim-sender" class="form-input" value="service-security@instagram.com" readonly>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Send To Student Email:</label>
+                  <select id="sim-target-select" class="form-select">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Simulated Subject / Message:</label>
+                  <input type="text" id="sim-subject" class="form-input" value="Your Security Verification Code: 482910">
+                </div>
+                <button class="btn btn-primary w-100" id="btn-run-simulation">
+                  <i class="fa-solid fa-paper-plane"></i> Send Test Verification OTP
+                </button>
+              </div>
+
+              <div class="simulator-trace-col">
+                <div class="trace-header">
+                  <span><i class="fa-solid fa-terminal"></i> Edge Pipeline Execution Log</span>
+                  <span class="trace-status" id="trace-status-badge">Idle</span>
+                </div>
+                <div class="trace-terminal" id="sim-trace-terminal">
+                  <div class="terminal-line text-muted">[SYSTEM] Cloudflare Email Routing Engine Initialized.</div>
+                  <div class="terminal-line text-muted">[DNS] MX Records verified for khanpro.me.</div>
+                  <div class="terminal-line text-muted">[READY] Select a student email and click "Send Test Verification OTP".</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Active Mappings Directory -->
+        <div class="tab-pane hidden" id="tab-directory">
+          <div class="directory-card glass-panel">
+            <div class="directory-toolbar">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="directory-search" class="form-input" placeholder="Search by roll number, alias, or Gmail...">
+              </div>
+              <div class="directory-actions">
+                <button class="btn btn-secondary btn-sm" id="btn-export-csv">
+                  <i class="fa-solid fa-file-csv"></i> Export CSV
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-refresh-directory">
+                  <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="directory-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Student Alias</th>
+                    <th>Assigned Gmail Cluster</th>
+                    <th>Date Activated</th>
+                    <th>Routing Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="directory-table-body">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="directory-footer">
+              <span id="directory-count-label">Showing active student mappings</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 3: CLUSTER & ADMIN CONTROL PANEL                 -->
+    <!-- ======================================================== -->
+    <section class="section admin-section" id="admin-panel">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-tag"><i class="fa-solid fa-shield-halved"></i> Master Management</div>
+          <h2 class="section-title">Gmail Cluster & Bulk Generator Control</h2>
+          <p class="section-subtitle">
+            Restricted to Master Administrator. Add/remove Gmails, adjust permissions, and configure access keys.
+          </p>
+        </div>
+
+        <!-- Admin Gate if not Master Admin -->
+        <div class="permission-gate-card glass-panel" id="admin-permission-gate">
+          <div class="gate-icon-wrap admin-gate-icon">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <div class="gate-content">
+            <div class="gate-tag"><i class="fa-solid fa-lock"></i> Master Admin Access</div>
+            <h3 class="gate-title">Admin Cluster Settings are Locked</h3>
+            <p class="gate-desc">
+              To configure destination Gmail clusters, batch generate accounts, or change student passkeys, enter the Master Admin Key.
+            </p>
+
+            <form id="admin-unlock-form" class="gate-form">
+              <div class="input-addon-group gate-input-wrap">
+                <span class="addon-prefix"><i class="fa-solid fa-fingerprint"></i></span>
+                <input type="password" id="admin-key-input" class="form-input" placeholder="Enter Master Admin Key (Default: ADMIN-2026)" required autocomplete="off">
+                <button type="submit" class="btn btn-primary" id="btn-unlock-admin">
+                  <i class="fa-solid fa-key"></i> Verify Admin
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Admin Content (Unlocked) -->
+        <div class="authorized-admin-wrapper hidden" id="authorized-admin-area">
+          <div class="session-badge-bar admin-bar">
+            <div class="session-info">
+              <span class="badge badge-primary"><i class="fa-solid fa-crown"></i> Master Admin Session Active</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-lock-admin-session">
+              <i class="fa-solid fa-lock"></i> Exit Admin
+            </button>
+          </div>
+
+          <!-- Passkey Settings Card -->
+          <div class="passkey-settings-card glass-panel mb-4">
+            <div class="card-head">
+              <h3><i class="fa-solid fa-sliders"></i> Access Passkey & Permission Settings</h3>
+              <span class="badge badge-info">Security Controls</span>
+            </div>
+            <p class="card-desc">Control who is allowed to use the Student Mail Portal. Change the access key anytime.</p>
+            
+            <form id="update-passkeys-form" class="passkey-form-grid">
+              <div class="form-group flex-1">
+                <label class="form-label">Student Access Key (Given to students you permit):</label>
+                <div class="input-addon-group">
+                  <span class="addon-prefix"><i class="fa-solid fa-users-gear"></i></span>
+                  <input type="text" id="setting-student-passkey" class="form-input" value="STUDENT-2026" required>
+                </div>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Master Admin Key (Your private key):</label>
+                <div class="input-addon-group">
+                  <span class="addon-prefix"><i class="fa-solid fa-user-lock"></i></span>
+                  <input type="text" id="setting-admin-passkey" class="form-input" value="ADMIN-2026" required>
+                </div>
+              </div>
+              <div class="form-actions-passkey">
+                <button type="submit" class="btn btn-primary" id="btn-save-passkeys">
+                  <i class="fa-solid fa-floppy-disk"></i> Save New Keys
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-grid">
+          <!-- Card 1: Manage Gmail Clusters -->
+          <div class="admin-card glass-panel">
+            <div class="card-head">
+              <h3><i class="fa-solid fa-server"></i> Verified Gmail Clusters</h3>
+              <span class="badge badge-info" id="cluster-total-badge">4 Clusters Active</span>
+            </div>
+            <p class="card-desc">Add or remove Gmail inboxes where student verification codes are aggregated.</p>
+
+            <form id="add-cluster-form" class="cluster-add-form">
+              <div class="input-addon-group">
+                <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
+                <input type="email" id="new-cluster-email" class="form-input" placeholder="new-cluster@gmail.com" required>
+                <button type="submit" class="btn btn-primary" id="btn-add-cluster">
+                  <i class="fa-solid fa-plus"></i> Add
+                </button>
+              </div>
+            </form>
+
+            <div class="cluster-list" id="cluster-items-container">
+              <!-- Cluster items rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Card 2: Bulk Student Range Generator -->
+          <div class="admin-card glass-panel">
+            <div class="card-head">
+              <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Bulk Student Range Generator</h3>
+              <span class="badge badge-primary">Auto-Distribute</span>
+            </div>
+            <p class="card-desc">Automatically create sequential roll numbers and evenly divide them across your active Gmails.</p>
+
+            <form id="bulk-generator-form" class="bulk-form">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label">Prefix:</label>
+                  <input type="text" id="bulk-prefix" class="form-input" value="bsf200" required>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">Start Roll #:</label>
+                  <input type="number" id="bulk-start" class="form-input" value="101" min="1" required>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label">End Roll #:</label>
+                  <input type="number" id="bulk-end" class="form-input" value="150" min="1" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Distribution Mode:</label>
+                <select id="bulk-dist-mode" class="form-select">
+                  <option value="round-robin">Round-Robin (Balance equally among all Gmails)</option>
+                  <option value="single-cluster">Assign all to a single selected Gmail</option>
+                </select>
+              </div>
+
+              <div class="form-group hidden" id="bulk-single-cluster-wrap">
+                <label class="form-label">Select Destination Gmail:</label>
+                <select id="bulk-target-cluster" class="form-select"></select>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" id="btn-run-bulk">
+                <i class="fa-solid fa-bolt"></i> Batch Generate Students
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Cloudflare Worker Code Snippet Box -->
+        <div class="code-export-box glass-panel">
+          <div class="code-header">
+            <div class="code-title">
+              <i class="fa-brands fa-cloudflare"></i> Production Cloudflare Email Worker Code (<code>worker.js</code>)
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-copy-worker-code">
+              <i class="fa-solid fa-copy"></i> Copy Worker Script
+            </button>
+          </div>
+          <p class="code-subtitle">
+            Deploy this lightweight worker to your Cloudflare account to handle the edge email stream and KV store.
+          </p>
+          <pre class="code-display"><code id="code-snippet-worker">export default {
+  async email(message, env, ctx) {
+    // 1. Extract the clean student prefix
+    const recipient = message.to.split('@')[0].toLowerCase();
+    
+    // 2. Fetch destination Gmail from Cloudflare KV Store
+    let targetGmail = await env.STUDENTS_KV.get(recipient);
+    
+    // Fallback: If not mapped individually, route to primary admin cluster
+    if (!targetGmail) {
+      targetGmail = env.FALLBACK_GMAIL || "cluster1@gmail.com";
+    }
+
+    // 3. Deliver natively via Cloudflare Edge Routing
+    try {
+      await message.forward(targetGmail);
+      console.log(`[SUCCESS] Forwarded ${message.to} -> ${targetGmail}`);
+    } catch (err) {
+      console.error(`[ERROR] Forward failed: ${err.message}`);
+    }
+  }
+};</code></pre>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 4: FULL WEB TOOLS ECOSYSTEM                      -->
+    <!-- ======================================================== -->
+    <section class="section tools-section" id="tools">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-tag"><i class="fa-solid fa-shapes"></i> Utility Center</div>
+          <h2 class="section-title">Explore Web Tools & Utilities</h2>
+          <p class="section-subtitle">
+            A growing collection of fast, privacy-friendly, browser-based utilities hosted directly on <strong>khanpro.me</strong>.
+          </p>
+        </div>
+
+        <div class="tools-grid">
+          <!-- Tool Card 1: Student Mail Engine -->
+          <div class="tool-card featured">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-1"><i class="fa-solid fa-envelope-circle-check"></i></div>
+              <span class="tool-badge">Flagship</span>
+            </div>
+            <h3 class="tool-title">Student Mail Routing Engine</h3>
+            <p class="tool-desc">Create custom institutional aliases with instant OTP forwarding to Gmail clusters.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Cloudflare Edge</span>
+              <span class="tool-tag">Unlimited</span>
+            </div>
+            <a href="#student-mail" class="btn btn-primary btn-sm tool-btn">Launch Tool <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Tool Card 2: High-Entropy Password Generator -->
+          <div class="tool-card" id="card-tool-password">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-2"><i class="fa-solid fa-key"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Secure Password & Key Generator</h3>
+            <p class="tool-desc">Generate cryptographically secure passwords and API tokens with customizable entropy.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Security</span>
+              <span class="tool-tag">Client-side</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="password-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 3: QR Code Studio -->
+          <div class="tool-card" id="card-tool-qr">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-3"><i class="fa-solid fa-qrcode"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Instant QR Code Generator</h3>
+            <p class="tool-desc">Turn any URL, Wi-Fi configuration, or student email into downloadable high-res QR codes.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Visual</span>
+              <span class="tool-tag">PNG / SVG</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="qr-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 4: DNS & MX Records Inspector -->
+          <div class="tool-card" id="card-tool-dns">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-4"><i class="fa-solid fa-globe"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Domain DNS & SPF Checker</h3>
+            <p class="tool-desc">Verify Cloudflare MX, SPF, DKIM, and DMARC parameters for optimal email delivery trust.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">DNS Audit</span>
+              <span class="tool-tag">Deliverability</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="dns-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 5: Case Converter & Text Formatter -->
+          <div class="tool-card" id="card-tool-text">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-5"><i class="fa-solid fa-font"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Smart Text & Case Transformer</h3>
+            <p class="tool-desc">Clean up student roll number lists, convert cases, clean duplicates, and format CSVs.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Productivity</span>
+              <span class="tool-tag">Data Clean</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="text-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 6: TempMail Generator -->
+          <div class="tool-card" id="card-tool-tempmail">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-temp"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Instant TempMail Generator</h3>
+            <p class="tool-desc">Generate disposable 10-minute temporary inboxes on khanpro.me to receive codes and bypass signups.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Disposable</span>
+              <span class="tool-tag">Zero Spam</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="tempmail-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 7: Email Warmup & Score Booster Engine -->
+          <div class="tool-card featured-warmup" id="card-tool-warmup">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-warmup"><i class="fa-solid fa-fire-flame-curved"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Peer-to-Peer Email Warmup Engine</h3>
+            <p class="tool-desc">Pool 5 to 10 Gmail accounts to auto-exchange realistic conversations between each other, dramatically boosting inbox reputation score.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Trust Score +99%</span>
+              <span class="tool-tag">Inbox Booster</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="warmup-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- INTERACTIVE TOOL MODALS                                  -->
+    <!-- ======================================================== -->
+
+    <!-- Modal 1: Password Generator -->
+    <div class="modal-overlay hidden" id="modal-password">
+      <div class="modal-box glass-panel">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-key"></i> Password & Key Generator</h3>
+          <button class="modal-close" data-close="modal-password">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="generated-display-wrap">
+            <input type="text" id="pwd-output" class="form-input form-input-lg" readonly>
+            <button class="btn btn-primary" id="btn-pwd-copy"><i class="fa-solid fa-copy"></i> Copy</button>
+          </div>
+          <div class="form-group mt-3">
+            <label class="form-label">Length: <span id="pwd-len-val">16</span> characters</label>
+            <input type="range" id="pwd-len" min="8" max="64" value="16" class="form-range">
+          </div>
+          <div class="checkbox-grid">
+            <label><input type="checkbox" id="pwd-upper" checked> Uppercase (A-Z)</label>
+            <label><input type="checkbox" id="pwd-lower" checked> Lowercase (a-z)</label>
+            <label><input type="checkbox" id="pwd-nums" checked> Numbers (0-9)</label>
+            <label><input type="checkbox" id="pwd-symbols" checked> Symbols (!@#$%)</label>
+          </div>
+          <button class="btn btn-secondary w-100 mt-3" id="btn-pwd-generate">
+            <i class="fa-solid fa-rotate"></i> Re-Generate Password
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: QR Code Generator -->
+    <div class="modal-overlay hidden" id="modal-qr">
+      <div class="modal-box glass-panel">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-qrcode"></i> Instant QR Code Generator</h3>
+          <button class="modal-close" data-close="modal-qr">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="form-group text-left">
+            <label class="form-label">Data / Text / Email / URL:</label>
+            <input type="text" id="qr-input" class="form-input" value="https://khanpro.me">
+          </div>
+          <div class="qr-canvas-wrap" id="qr-output-container">
+            <!-- Dynamic QR Code rendered here -->
+            <img id="qr-image" src="" alt="Generated QR" class="qr-preview-img">
+          </div>
+          <p class="text-muted text-sm mt-2">Scan to test on mobile devices</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: DNS & SPF Checker -->
+    <div class="modal-overlay hidden" id="modal-dns">
+      <div class="modal-box glass-panel">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-globe"></i> DNS & Deliverability Status</h3>
+          <button class="modal-close" data-close="modal-dns">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="dns-record-card">
+            <div class="dns-type"><span class="badge badge-primary">MX</span> Cloudflare Email Inbound</div>
+            <div class="dns-value">isaac.mx.cloudflare.net (Priority: 25)</div>
+            <div class="dns-status text-success"><i class="fa-solid fa-check"></i> Configured</div>
+          </div>
+          <div class="dns-record-card">
+            <div class="dns-type"><span class="badge badge-info">TXT</span> SPF Anti-Spoofing</div>
+            <div class="dns-value">v=spf1 include:_spf.mx.cloudflare.net ~all</div>
+            <div class="dns-status text-success"><i class="fa-solid fa-check"></i> Active & Protected</div>
+          </div>
+          <div class="dns-record-card">
+            <div class="dns-type"><span class="badge badge-success">DMARC</span> Quarantine Policy</div>
+            <div class="dns-value">v=DMARC1; p=none; rua=mailto:admin@khanpro.me</div>
+            <div class="dns-status text-success"><i class="fa-solid fa-check"></i> Monitored</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Text Formatter -->
+    <div class="modal-overlay hidden" id="modal-text">
+      <div class="modal-box glass-panel">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-font"></i> Text & Roll Number Formatter</h3>
+          <button class="modal-close" data-close="modal-text">&times;</button>
+        </div>
+        <div class="modal-body">
+          <textarea id="text-input" class="form-textarea" placeholder="Paste roll numbers or text here..." rows="5"></textarea>
+          <div class="btn-group-wrap mt-2">
+            <button class="btn btn-secondary btn-sm" id="btn-text-lower">lowercase</button>
+            <button class="btn btn-secondary btn-sm" id="btn-text-upper">UPPERCASE</button>
+            <button class="btn btn-secondary btn-sm" id="btn-text-clean">Trim & Remove Duplicates</button>
+            <button class="btn btn-secondary btn-sm" id="btn-text-append">Append @khanpro.me</button>
+          </div>
+        </div>
+      </div>
+    <!-- Modal 5: Instant TempMail Generator -->
+    <div class="modal-overlay hidden" id="modal-tempmail">
+      <div class="modal-box modal-box-lg glass-panel">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="tempmail-header-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div>
+              <h3>Instant TempMail Generator</h3>
+              <p class="text-muted text-sm">Disposable 10-minute inbox on khanpro.me</p>
+            </div>
+          </div>
+          <button class="modal-close" data-close="modal-tempmail">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Temp Address Display Bar -->
+          <div class="tempmail-address-bar">
+            <div class="tempmail-input-wrap">
+              <i class="fa-solid fa-envelope tempmail-mail-icon"></i>
+              <input type="text" id="tempmail-address-input" class="form-input form-input-lg" readonly value="tmp_x9k2p@khanpro.me">
+            </div>
+            <div class="tempmail-actions-wrap">
+              <button class="btn btn-primary" id="btn-tempmail-copy" title="Copy Email">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+              <button class="btn btn-secondary" id="btn-tempmail-new" title="New Random Email">
+                <i class="fa-solid fa-rotate"></i> Change
+              </button>
+            </div>
+          </div>
+
+          <!-- Status & Countdown Timer -->
+          <div class="tempmail-status-bar">
+            <div class="tempmail-timer">
+              <i class="fa-solid fa-hourglass-half"></i> Expires in: <span id="tempmail-countdown" class="text-warning">10:00</span>
+            </div>
+            <div class="tempmail-sync">
+              <span class="status-dot"></span>
+              <span>Auto-refreshing live inbox</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-tempmail-simulate">
+              <i class="fa-solid fa-paper-plane"></i> Simulate New OTP
+            </button>
+          </div>
+
+          <!-- Live Inbox List -->
+          <div class="tempmail-inbox-section">
+            <div class="tempmail-inbox-header">
+              <h4><i class="fa-solid fa-inbox"></i> Incoming Messages (<span id="tempmail-msg-count">1</span>)</h4>
+              <button class="btn-refresh-inbox" id="btn-tempmail-refresh" title="Refresh Inbox">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+
+            <div class="tempmail-msg-list" id="tempmail-msg-container">
+              <!-- Messages rendered dynamically -->
+            </div>
+
+            <!-- Single Message Detail Viewer -->
+            <div class="tempmail-detail-viewer hidden" id="tempmail-detail-view">
+              <button class="btn btn-secondary btn-sm mb-3" id="btn-tempmail-back-inbox">
+                <i class="fa-solid fa-arrow-left"></i> Back to Inbox
+              </button>
+              <div class="tempmail-detail-card">
+                <div class="detail-from-row">
+                  <span class="detail-label">From:</span>
+                  <span class="detail-val" id="detail-from">security@canva.com</span>
+                </div>
+                <div class="detail-subj-row">
+                  <span class="detail-label">Subject:</span>
+                  <span class="detail-val" id="detail-subject">Your Canva verification code is 591024</span>
+                </div>
+                <div class="detail-time-row">
+                  <span class="detail-label">Received:</span>
+                  <span class="detail-val" id="detail-time">Just now</span>
+                </div>
+                <div class="detail-body-box" id="detail-body">
+                  Your verification code is: 591024
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 6: Email Warmup & Score Booster Engine -->
+    <div class="modal-overlay hidden" id="modal-warmup">
+      <div class="modal-box modal-box-lg glass-panel">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="warmup-header-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+            <div>
+              <h3>Peer-to-Peer Email Warmup Engine</h3>
+              <p class="text-muted text-sm">Boost domain & Gmail deliverability score through automated conversational exchanges</p>
+            </div>
+          </div>
+          <button class="modal-close" data-close="modal-warmup">&times;</button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Step 1: Manage Warmup Gmail Pool -->
+          <div class="warmup-step-card">
+            <div class="warmup-step-header">
+              <span class="step-badge">1</span>
+              <div class="flex-1">
+                <h4>Warmup Accounts Pool (<span id="warmup-pool-count">4</span>/10 Gmails)</h4>
+                <p class="text-muted text-sm">These Gmails will automatically send and receive warm conversation threads with each other.</p>
+              </div>
+            </div>
+
+            <form id="warmup-add-form" class="warmup-add-row">
+              <div class="input-addon-group" style="flex: 1;">
+                <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
+                <input type="email" id="warmup-gmail-input" class="form-input" placeholder="e.g. yourname5@gmail.com" required>
+              </div>
+              <button type="submit" class="btn btn-primary" id="btn-add-warmup-gmail">
+                <i class="fa-solid fa-plus"></i> Add Account
+              </button>
+            </form>
+
+            <div class="warmup-chips-container" id="warmup-chips-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Step 2: Warmup Strategy & Schedule -->
+          <div class="warmup-step-card">
+            <div class="warmup-step-header">
+              <span class="step-badge">2</span>
+              <div class="flex-1">
+                <h4>Warmup Intensity & Topics</h4>
+                <p class="text-muted text-sm">Configure how frequently and what conversational topics are exchanged.</p>
+              </div>
+            </div>
+
+            <div class="warmup-settings-grid">
+              <div class="form-group flex-1">
+                <label class="form-label">Simulation Speed / Frequency:</label>
+                <select id="warmup-speed" class="form-select">
+                  <option value="3">High-Speed Demo (Every 3 seconds)</option>
+                  <option value="10">Moderate Speed (Every 10 seconds)</option>
+                  <option value="30">Paced Cycle (Every 30 seconds)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">Conversation Thread Style:</label>
+                <select id="warmup-topic" class="form-select">
+                  <option value="mixed">Mixed (Business, Academic, Technical)</option>
+                  <option value="campus">Campus & Academic Collaboration</option>
+                  <option value="tech">Tech & Software Project Discussions</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Launch Engine & Live Stats -->
+          <div class="warmup-step-card">
+            <div class="warmup-step-header">
+              <span class="step-badge">3</span>
+              <div class="flex-1">
+                <h4>Engine Status & Deliverability Health</h4>
+                <p class="text-muted text-sm">Run live warmup cycle or export the standalone background bot.</p>
+              </div>
+            </div>
+
+            <div class="warmup-action-bar">
+              <button class="btn btn-primary btn-lg btn-glow" id="btn-toggle-warmup">
+                <i class="fa-solid fa-rocket"></i> <span id="warmup-toggle-text">Start Warmup Campaign</span>
+              </button>
+              <button class="btn btn-secondary btn-lg" id="btn-download-warmup-script">
+                <i class="fa-brands fa-python"></i> Download Python Auto-Bot
+              </button>
+            </div>
+
+            <!-- Health & Progress Metrics -->
+            <div class="warmup-metrics-dashboard">
+              <div class="warmup-metrics-grid">
+                <div class="warmup-metric-card">
+                  <span class="metric-val" id="metric-sent-count">0</span>
+                  <span class="metric-label">Exchanges Sent</span>
+                </div>
+                <div class="warmup-metric-card">
+                  <span class="metric-val text-success" id="metric-delivered-count">100%</span>
+                  <span class="metric-label">Inbox Delivery</span>
+                </div>
+                <div class="warmup-metric-card">
+                  <span class="metric-val" id="metric-rounds-count">0</span>
+                  <span class="metric-label">Completed Rounds</span>
+                </div>
+                <div class="warmup-metric-card">
+                  <span class="metric-val text-success" id="metric-trust-val">82%</span>
+                  <span class="metric-label">Target Inbox Trust</span>
+                </div>
+              </div>
+
+              <!-- Trust Meter Bar -->
+              <div class="trust-meter-wrap mt-3">
+                <div class="trust-meter-labels">
+                  <span>Domain Health Status: <strong id="trust-status-text" class="text-success">Heating Up (Good)</strong></span>
+                  <span id="trust-percentage-text">82 / 100</span>
+                </div>
+                <div class="trust-bar-track">
+                  <div class="trust-bar-fill" id="trust-bar-fill" style="width: 82%"></div>
+                </div>
+              </div>
+
+              <!-- Live Execution Terminal -->
+              <div class="warmup-terminal-wrap mt-3">
+                <div class="terminal-head">
+                  <span><i class="fa-solid fa-terminal"></i> Peer-to-Peer Warmup Engine Log</span>
+                  <span class="badge badge-success" id="warmup-badge-state"><i class="fa-solid fa-circle"></i> Idle</span>
+                </div>
+                <div class="warmup-terminal-feed" id="warmup-feed-terminal">
+                  <div class="terminal-line text-muted">[INITIALIZED] Warmup pool loaded. Click "Start Warmup Campaign" to begin automated exchanges.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modern Clean Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col-main">
+        <div class="brand-text">
+          <span class="brand-name">KHANPRO</span><span class="brand-tld">.ME</span>
+        </div>
+        <p class="footer-bio">
+          Next-generation web utilities and student email routing infrastructure engineered for high deliverability, edge performance, and zero hosting costs.
+        </p>
+        <div class="edge-badge">
+          <i class="fa-brands fa-cloudflare"></i> Powered by Cloudflare Edge Network
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#tools">Web Tools</a></li>
+          <li><a href="#student-mail">Student Mail Portal</a></li>
+          <li><a href="#admin-panel">Cluster Admin</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Architecture</h4>
+        <ul>
+          <li><a href="#student-mail">Edge Forwarding</a></li>
+          <li><a href="#admin-panel">Gmail Clustering</a></li>
+          <li><a href="#tools">DNS Records</a></li>
+          <li><a href="#admin-panel">Worker Code</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Status</h4>
+        <div class="status-card-footer">
+          <div class="status-row">
+            <span>Domain Health:</span>
+            <span class="text-success"><i class="fa-solid fa-circle"></i> High Trust</span>
+          </div>
+          <div class="status-row">
+            <span>Edge Nodes:</span>
+            <span>310+ Global Locations</span>
+          </div>
+          <div class="status-row">
+            <span>Cost:</span>
+            <span class="badge badge-success">100% Free Tier</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 KhanPro.me. All rights reserved.</p>
+        <p class="footer-credit">Built with Cloudflare Email Routing & Workers Engine</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Notification Toast Element -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
