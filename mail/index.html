@@ -37,6 +37,7 @@
       <div class="nav-links" id="nav-menu">
         <a href="#home" class="nav-link active" data-nav="home"><i class="fa-solid fa-house"></i> Home</a>
         <a href="#tools" class="nav-link" data-nav="tools"><i class="fa-solid fa-toolbox"></i> Web Tools</a>
+        <a href="#desktop-apps" class="nav-link" data-nav="desktop-apps"><i class="fa-solid fa-laptop-code"></i> Desktop Apps</a>
         <a href="#student-mail" class="nav-link special-link" data-nav="student-mail">
           <i class="fa-solid fa-envelope-circle-check"></i> Student Mail Portal
           <span class="badge-hot">Core</span>
@@ -439,7 +440,8 @@
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
     <!-- ======================================================== -->
     <!-- SECTION 3: CLUSTER & ADMIN CONTROL PANEL                 -->
@@ -624,7 +626,25 @@
   }
 };</code></pre>
         </div>
+
+        <!-- 1-Click GitHub & Cloudflare Auto Deploy Box -->
+        <div class="code-export-box glass-panel" style="margin-top: 24px; border-color: rgba(56, 189, 248, 0.3);">
+          <div class="code-header">
+            <div class="code-title">
+              <i class="fa-solid fa-cloud-arrow-up text-accent"></i> 1-Click GitHub & Cloudflare Sync
+            </div>
+            <button class="btn btn-primary btn-sm btn-glow" id="btn-trigger-auto-deploy">
+              <i class="fa-solid fa-bolt"></i> Push Changes Live Now
+            </button>
+          </div>
+          <p class="code-subtitle">
+            Click this button (or double-click <code>⚡_1_CLICK_DEPLOY.bat</code> inside your <code>mail</code> folder) to automatically push all website changes to your connected GitHub repository, triggering an instant Cloudflare live update!
+          </p>
+          <div class="deploy-terminal-feed hidden" id="deploy-terminal-feed" style="background: rgba(10, 15, 29, 0.9); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; font-family: var(--font-mono); font-size: 0.8rem; color: #94a3b8; margin-top: 12px;">
+            <div id="deploy-feed-line"><i class="fa-solid fa-circle-notch fa-spin text-accent"></i> Ready to sync...</div>
+          </div>
         </div>
+      </div>
       </div>
     </section>
 
@@ -746,6 +766,169 @@
             </div>
             <button class="btn btn-secondary btn-sm tool-btn" data-tool="warmup-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
           </div>
+
+          <!-- Tool Card 8: Gmail Trust Score & Health Inspector -->
+          <div class="tool-card featured-checker" id="card-tool-checker">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-checker"><i class="fa-solid fa-shield-halved"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Gmail Trust Score & Health Inspector</h3>
+            <p class="tool-desc">Enter any Gmail address to audit its strength, deliverability rating, spam risk, and account reputation score before use.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Trust Audit</span>
+              <span class="tool-tag">Health Check</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="checker-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <!-- Tool Card 9: Live YouTube Intelligence & Video Crawler -->
+          <div class="tool-card featured-yt" id="card-tool-yt">
+            <div class="tool-card-top">
+              <div class="tool-icon gradient-icon-yt"><i class="fa-brands fa-youtube"></i></div>
+              <span class="tool-badge badge-active">Live Tool</span>
+            </div>
+            <h3 class="tool-title">Live YouTube Video & Channel Crawler</h3>
+            <p class="tool-desc">Crawl any YouTube video or channel live: extract SEO tags, view counts, 4K HD thumbnails, and metadata instantly.</p>
+            <div class="tool-meta">
+              <span class="tool-tag">Video Crawler</span>
+              <span class="tool-tag">Tags & SEO</span>
+            </div>
+            <button class="btn btn-secondary btn-sm tool-btn" data-tool="yt-crawler-modal">Launch Tool <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 5: DESKTOP SOFTWARE & AUTOMATION SUITE           -->
+    <!-- ======================================================== -->
+    <section class="section desktop-apps-section" id="desktop-apps">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="section-tag"><i class="fa-solid fa-laptop-code"></i> Windows Software Suite</div>
+          <h2 class="section-title">Desktop Automation & Standalone Tools</h2>
+          <p class="section-subtitle">
+            High-performance desktop applications engineered for Windows 10 & 11. Download standalone <code>.exe</code> and full installer packages directly to your PC.
+          </p>
+        </div>
+
+        <div class="desktop-apps-grid">
+
+          <!-- App Card 1: YouTube Crawler -->
+          <div class="desktop-app-card glass-panel">
+            <div class="app-card-badge">
+              <span class="badge badge-success"><i class="fa-brands fa-windows"></i> Win 10/11 x64</span>
+              <span class="badge badge-info">v1.0.4</span>
+            </div>
+            <div class="app-card-head">
+              <div class="app-icon-box app-icon-yt">
+                <i class="fa-brands fa-youtube"></i>
+              </div>
+              <div class="app-head-info">
+                <h3>YouTube Crawler & Intelligence Suite</h3>
+                <span class="app-author">By KhanPro Tech Suite</span>
+              </div>
+            </div>
+            <p class="app-card-desc">
+              Full-featured YouTube desktop crawler. Scrape channel videos, export SEO tags, crawl playlists, filter categories and countries without requiring a YouTube Data API key.
+            </p>
+            <div class="app-features-list">
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> No YouTube API Key Required (Zero Quota Limits)</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Bulk Channel & Playlist Video Extraction</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Export clean CSV, JSON, and SEO Tag clouds</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> High-Speed Multi-threaded Engine</div>
+            </div>
+            <div class="app-download-footer">
+              <div class="app-file-meta">
+                <span><i class="fa-solid fa-hard-drive"></i> Size: <strong>36.7 MB (.zip) / 13.8 MB (.exe)</strong></span>
+                <span><i class="fa-solid fa-shield-halved text-success"></i> 100% Virus-Free & Safe</span>
+              </div>
+              <div class="app-download-btns">
+                <a href="downloads/YouTubeCrowler_v1.0_Windows.zip" download="YouTubeCrowler_v1.0_Windows.zip" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-download"></i> Download Full Package (.zip)
+                </a>
+                <a href="downloads/YouTubeCrowler.exe" download="YouTubeCrowler.exe" class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-file-arrow-down"></i> Direct .exe
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- App Card 2: Facebook Automation Suite -->
+          <div class="desktop-app-card glass-panel">
+            <div class="app-card-badge">
+              <span class="badge badge-success"><i class="fa-brands fa-windows"></i> Win 10/11 x64</span>
+              <span class="badge badge-primary">v2.1 Suite</span>
+            </div>
+            <div class="app-card-head">
+              <div class="app-icon-box app-icon-fb">
+                <i class="fa-brands fa-facebook"></i>
+              </div>
+              <div class="app-head-info">
+                <h3>Facebook Community & Group Automation</h3>
+                <span class="app-author">By KhanPro Tech Suite</span>
+              </div>
+            </div>
+            <p class="app-card-desc">
+              Desktop automation suite for scheduled group postings, community outreach, and engagement. Operates directly on your residential PC connection to prevent account flags.
+            </p>
+            <div class="app-features-list">
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Residential IP Safe (Anti-Checkpoint Protection)</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Automated Post & Comment Scheduling</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Group Discussion Monitoring & Lead Capture</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Multi-Account Cookie Session Switcher</div>
+            </div>
+            <div class="app-download-footer">
+              <div class="app-file-meta">
+                <span><i class="fa-solid fa-hard-drive"></i> Size: <strong>14.2 MB (Standalone)</strong></span>
+                <span><i class="fa-solid fa-shield-halved text-success"></i> Residential Safe</span>
+              </div>
+              <div class="app-download-btns">
+                <button type="button" class="btn btn-primary btn-sm btn-disabled" title="Included in desktop software suite">
+                  <i class="fa-solid fa-download"></i> Included in Toolkit
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- App Card 3: Peer-to-Peer Gmail Warmup Bot -->
+          <div class="desktop-app-card glass-panel">
+            <div class="app-card-badge">
+              <span class="badge badge-success"><i class="fa-brands fa-python"></i> Python / Win</span>
+              <span class="badge badge-warning">v1.2 Core</span>
+            </div>
+            <div class="app-card-head">
+              <div class="app-icon-box app-icon-warmup">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+              </div>
+              <div class="app-head-info">
+                <h3>Gmail Peer-to-Peer SMTP Warmup Bot</h3>
+                <span class="app-author">By KhanPro Tech Suite</span>
+              </div>
+            </div>
+            <p class="app-card-desc">
+              Lightweight desktop daemon that exchanges natural conversational emails between your pool of Gmails using authenticated Google App Passwords to maximize deliverability.
+            </p>
+            <div class="app-features-list">
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Direct Google SMTP (smtp.gmail.com:587) TLS v1.3</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Dynamic Human-Like Thread Conversation Generator</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Configurable 1 to 5 Minute Smart Sleep Jitter</div>
+              <div class="app-feature-item"><i class="fa-solid fa-check text-success"></i> Zero Third-Party Dependencies (Pure Python)</div>
+            </div>
+            <div class="app-download-footer">
+              <div class="app-file-meta">
+                <span><i class="fa-solid fa-hard-drive"></i> Size: <strong>Standalone Script (.py)</strong></span>
+                <span><i class="fa-solid fa-shield-halved text-success"></i> 100% Open Source</span>
+              </div>
+              <div class="app-download-btns">
+                <a href="gmail_warmup_bot.py" download="gmail_warmup_bot.py" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-download"></i> Download Script (.py)
+                </a>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -848,6 +1031,8 @@
           </div>
         </div>
       </div>
+    </div>
+
     <!-- Modal 5: Instant TempMail Generator -->
     <div class="modal-overlay hidden" id="modal-tempmail">
       <div class="modal-box modal-box-lg glass-panel">
@@ -953,22 +1138,62 @@
             <div class="warmup-step-header">
               <span class="step-badge">1</span>
               <div class="flex-1">
-                <h4>Warmup Accounts Pool (<span id="warmup-pool-count">4</span>/10 Gmails)</h4>
-                <p class="text-muted text-sm">These Gmails will automatically send and receive warm conversation threads with each other.</p>
+                <h4>Warmup Accounts Pool (<span id="warmup-pool-count">0</span>/10 Gmails)</h4>
+                <p class="text-muted text-sm">Add each Gmail account along with its 16-character Google App Password for authenticated Google SMTP delivery.</p>
               </div>
             </div>
 
-            <form id="warmup-add-form" class="warmup-add-row">
-              <div class="input-addon-group" style="flex: 1;">
-                <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
-                <input type="email" id="warmup-gmail-input" class="form-input" placeholder="e.g. yourname5@gmail.com" required>
+            <!-- Quick 2-Step Google Setup Guide -->
+            <div class="google-auth-steps-banner">
+              <div class="step-pill-link">
+                <span class="step-mini-num">1</span>
+                <span>Pehle 2-Step Verification ON karein:</span>
+                <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" class="btn-step-action btn-step-action-2fa">
+                  <i class="fa-solid fa-shield-halved"></i> Turn ON 2-Step Verification <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <button type="submit" class="btn btn-primary" id="btn-add-warmup-gmail">
-                <i class="fa-solid fa-plus"></i> Add Account
-              </button>
+              <div class="step-pill-link">
+                <span class="step-mini-num">2</span>
+                <span>Phir 16-Digit App Password banayein:</span>
+                <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" class="btn-step-action btn-step-action-key">
+                  <i class="fa-solid fa-key"></i> Generate 16-Digit Key <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+
+            <form id="warmup-add-form" class="warmup-add-grid">
+              <div class="form-group flex-1">
+                <label class="form-label text-sm"><i class="fa-brands fa-google text-muted"></i> Gmail Address:</label>
+                <input type="email" id="warmup-gmail-input" class="form-input" placeholder="e.g. account1@gmail.com" required>
+              </div>
+              <div class="form-group flex-1">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+                  <label class="form-label text-sm" style="margin: 0;"><i class="fa-solid fa-key text-muted"></i> 16-Digit App Password:</label>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener noreferrer" class="text-xs text-sky" style="text-decoration: underline;" title="Turn on 2-Step Verification first">
+                      <i class="fa-solid fa-shield-halved"></i> 1. Enable 2FA
+                    </a>
+                    <span class="text-muted text-xs">•</span>
+                    <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" class="text-accent text-xs" style="text-decoration: underline;" title="Create 16-Digit App Password">
+                      <i class="fa-solid fa-key"></i> 2. Get Key
+                    </a>
+                  </div>
+                </div>
+                <div class="password-input-wrap">
+                  <input type="password" id="warmup-pass-input" class="form-input" placeholder="e.g. abcd efgh ijkl mnop" required autocomplete="off">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-warmup-pass" title="Show/Hide Password">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="form-group" style="align-self: flex-end;">
+                <button type="submit" class="btn btn-primary" id="btn-add-warmup-gmail" style="height: 44px; white-space: nowrap;">
+                  <i class="fa-solid fa-plus"></i> Add Account & Key
+                </button>
+              </div>
             </form>
 
-            <div class="warmup-chips-container" id="warmup-chips-container">
+            <div class="warmup-accounts-list" id="warmup-chips-container">
               <!-- Rendered via JS -->
             </div>
           </div>
@@ -1065,6 +1290,289 @@
                 </div>
               </div>
             </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 7: Gmail Trust Score & Health Inspector -->
+    <div class="modal-overlay hidden" id="modal-checker">
+      <div class="modal-box modal-box-lg glass-panel">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="checker-header-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+              <h3>Gmail Trust & Health Inspector</h3>
+              <p class="text-muted text-sm">Analyze any Gmail account's reputation score, spam risk, and inbox delivery standing</p>
+            </div>
+          </div>
+          <button class="modal-close" data-close="modal-checker">&times;</button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Search / Input Card -->
+          <div class="checker-search-card">
+            <form id="checker-form" class="checker-input-row">
+              <div class="input-addon-group" style="flex: 1;">
+                <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
+                <input type="email" id="checker-email-input" class="form-input form-input-lg" placeholder="e.g. youraccount@gmail.com" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg" id="btn-run-check">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Trust Score
+              </button>
+            </form>
+          </div>
+
+          <!-- Live Scanning Terminal -->
+          <div class="checker-scan-terminal hidden" id="checker-scan-box">
+            <div class="checker-scan-spinner"><i class="fa-solid fa-circle-notch fa-spin text-accent"></i> <span>Running Security & Deliverability Diagnostics...</span></div>
+            <div class="checker-scan-logs" id="checker-scan-logs"></div>
+          </div>
+
+          <!-- Result Dashboard -->
+          <div class="checker-results-wrap hidden" id="checker-results-box">
+            <div class="checker-score-banner">
+              <div class="checker-score-gauge">
+                <div class="score-circle-outer" id="checker-circle-outer">
+                  <span class="score-circle-num" id="checker-score-num">88</span>
+                  <span class="score-circle-sub">/ 100</span>
+                </div>
+              </div>
+              <div class="checker-score-text">
+                <span class="badge badge-success" id="checker-badge-status"><i class="fa-solid fa-circle-check"></i> High Trust Standing</span>
+                <h4 id="checker-email-display">youraccount@gmail.com</h4>
+                <p class="text-muted text-sm" id="checker-summary-desc">
+                  This Gmail account demonstrates clean human naming patterns, active Google MX routing, and prime deliverability health.
+                </p>
+              </div>
+            </div>
+
+            <!-- 4 Grid Metrics -->
+            <div class="checker-metrics-grid">
+              <div class="checker-metric-card">
+                <span class="metric-icon"><i class="fa-solid fa-shield-virus"></i></span>
+                <span class="metric-val text-success" id="chk-spam-risk">Ultra Low (0%)</span>
+                <span class="metric-label">Spam Trap Risk</span>
+              </div>
+              <div class="checker-metric-card">
+                <span class="metric-icon"><i class="fa-solid fa-inbox"></i></span>
+                <span class="metric-val text-info" id="chk-inbox-rate">96% Primary</span>
+                <span class="metric-label">Inbox Placement</span>
+              </div>
+              <div class="checker-metric-card">
+                <span class="metric-icon"><i class="fa-solid fa-robot"></i></span>
+                <span class="metric-val text-success" id="chk-bot-risk">Human Pattern</span>
+                <span class="metric-label">Bot Detection Risk</span>
+              </div>
+              <div class="checker-metric-card">
+                <span class="metric-icon"><i class="fa-solid fa-server"></i></span>
+                <span class="metric-val text-success" id="chk-mx-status">Google Mail (Active)</span>
+                <span class="metric-label">MX Server Routing</span>
+              </div>
+            </div>
+
+            <!-- Audit Checklist -->
+            <div class="checker-audit-checklist">
+              <h5><i class="fa-solid fa-clipboard-check"></i> Deliverability Diagnostic Breakdown</h5>
+              <div class="checklist-items" id="checker-audit-items"></div>
+            </div>
+
+            <!-- Quick Action: Add to Warmup -->
+            <div class="checker-action-bar">
+              <button type="button" class="btn btn-primary" id="btn-quick-add-warmup">
+                <i class="fa-solid fa-fire"></i> Add this Account to Warmup Pool
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-retest-email">
+                <i class="fa-solid fa-rotate"></i> Test Another Gmail
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 8: Live YouTube Video & Channel Crawler -->
+    <div class="modal-overlay hidden" id="modal-yt-crawler">
+      <div class="modal-box modal-box-lg glass-panel">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="yt-header-icon"><i class="fa-brands fa-youtube"></i></div>
+            <div>
+              <h3>Live YouTube Video & Channel Crawler</h3>
+              <p class="text-muted text-sm">Extract live metadata, SEO tags, HD thumbnails, and video statistics</p>
+            </div>
+          </div>
+          <button class="modal-close" data-close="modal-yt-crawler">&times;</button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Search / Input Card -->
+          <div class="yt-search-card">
+            <form id="yt-crawl-form" class="yt-input-row">
+              <div class="input-addon-group" style="flex: 1;">
+                <span class="addon-prefix"><i class="fa-brands fa-youtube" style="color: #ef4444;"></i></span>
+                <input type="text" id="yt-url-input" class="form-input form-input-lg" placeholder="Paste YouTube Video URL (e.g. https://www.youtube.com/watch?v=... or youtu.be/...)" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg btn-yt-crawl" id="btn-run-yt-crawl">
+                <i class="fa-solid fa-spider"></i> Crawl YouTube Data
+              </button>
+            </form>
+
+            <div class="yt-samples-row">
+              <span class="text-xs text-muted">Try sample video:</span>
+              <button type="button" class="btn-sample-pill" data-yt-sample="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <i class="fa-solid fa-play text-xs"></i> Rick Astley - Never Gonna Give You Up
+              </button>
+              <button type="button" class="btn-sample-pill" data-yt-sample="https://www.youtube.com/watch?v=jNQXAC9IVRw">
+                <i class="fa-solid fa-play text-xs"></i> Me at the zoo (1st YouTube Video)
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Scanning / Extraction Terminal -->
+          <div class="yt-scan-terminal hidden" id="yt-crawl-loading">
+            <div class="yt-scan-spinner">
+              <i class="fa-solid fa-circle-notch fa-spin text-accent"></i>
+              <span id="yt-scan-status-text">Crawling video streams & metadata...</span>
+            </div>
+            <div class="yt-scan-logs" id="yt-crawl-logs">
+              <div class="yt-log-item"><i class="fa-solid fa-check text-success"></i> Resolving YouTube endpoint stream...</div>
+            </div>
+          </div>
+
+          <!-- Result Dashboard -->
+          <div class="yt-results-wrap hidden" id="yt-crawl-results">
+            
+            <!-- Video Showcase Header -->
+            <div class="yt-video-banner">
+              <div class="yt-embed-wrap" id="yt-embed-container">
+                <iframe id="yt-iframe" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+              </div>
+              <div class="yt-video-info">
+                <div class="yt-badges-row">
+                  <span class="badge badge-success" id="yt-category-badge"><i class="fa-solid fa-layer-group"></i> Music</span>
+                  <span class="badge badge-info" id="yt-publish-date"><i class="fa-solid fa-calendar-days"></i> Oct 25, 2009</span>
+                </div>
+                <h4 id="yt-video-title">YouTube Video Title</h4>
+                <div class="yt-channel-row">
+                  <i class="fa-solid fa-circle-user text-muted"></i>
+                  <a href="#" target="_blank" rel="noopener noreferrer" id="yt-channel-link" class="yt-channel-name">Channel Name</a>
+                  <i class="fa-solid fa-circle-check text-info" title="Verified Creator"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Stats Ribbon -->
+            <div class="yt-stats-grid">
+              <div class="yt-stat-card">
+                <span class="stat-icon"><i class="fa-solid fa-eye text-sky"></i></span>
+                <span class="stat-val" id="yt-views-count">0</span>
+                <span class="stat-lbl">Total Views</span>
+              </div>
+              <div class="yt-stat-card">
+                <span class="stat-icon"><i class="fa-solid fa-thumbs-up text-accent"></i></span>
+                <span class="stat-val" id="yt-likes-count">0</span>
+                <span class="stat-lbl">Likes</span>
+              </div>
+              <div class="yt-stat-card">
+                <span class="stat-icon"><i class="fa-solid fa-clock text-warning"></i></span>
+                <span class="stat-val" id="yt-duration">0:00</span>
+                <span class="stat-lbl">Duration</span>
+              </div>
+              <div class="yt-stat-card">
+                <span class="stat-icon"><i class="fa-solid fa-tags text-success"></i></span>
+                <span class="stat-val" id="yt-tags-count">0</span>
+                <span class="stat-lbl">SEO Tags</span>
+              </div>
+            </div>
+
+            <!-- HD Thumbnails Studio -->
+            <div class="yt-subpanel">
+              <div class="yt-subpanel-header">
+                <h5><i class="fa-solid fa-image"></i> HD Thumbnail Studio & Download</h5>
+                <span class="text-xs text-muted">1-Click Direct Image Extraction</span>
+              </div>
+              <div class="yt-thumb-studio-row">
+                <div class="yt-thumb-preview-box">
+                  <img id="yt-thumb-img" src="" alt="Video Thumbnail">
+                </div>
+                <div class="yt-thumb-downloads">
+                  <a id="btn-dl-thumb-max" href="#" target="_blank" download="thumbnail_1080p.jpg" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-download"></i> MaxRes (1080p HD)
+                  </a>
+                  <a id="btn-dl-thumb-hd" href="#" target="_blank" download="thumbnail_720p.jpg" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-download"></i> High Quality (720p)
+                  </a>
+                  <a id="btn-dl-thumb-mq" href="#" target="_blank" download="thumbnail_medium.jpg" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-download"></i> Medium Quality (480p)
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Extracted SEO Tags Cloud -->
+            <div class="yt-subpanel">
+              <div class="yt-subpanel-header">
+                <h5><i class="fa-solid fa-tags"></i> Extracted SEO Tags & Keywords (<span id="yt-tags-count-text">0</span>)</h5>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-copy-all-tags">
+                  <i class="fa-solid fa-copy"></i> Copy All Tags (For YouTube Studio)
+                </button>
+              </div>
+              <div class="yt-tags-cloud" id="yt-tags-container">
+                <!-- Tags rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Description Box -->
+            <div class="yt-subpanel">
+              <div class="yt-subpanel-header">
+                <h5><i class="fa-solid fa-align-left"></i> Video Description</h5>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-description">
+                  <i class="fa-solid fa-copy"></i> Copy Description
+                </button>
+              </div>
+              <div class="yt-desc-box" id="yt-description-box">
+                <!-- Video description -->
+              </div>
+            </div>
+
+            <!-- Stream Formats Table (if returned by yt-dlp) -->
+            <div class="yt-subpanel" id="yt-formats-wrap">
+              <div class="yt-subpanel-header">
+                <h5><i class="fa-solid fa-film"></i> Available Stream Resolutions</h5>
+                <span class="text-xs text-muted">Direct Extraction Streams</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="yt-formats-table">
+                  <thead>
+                    <tr>
+                      <th>Resolution / Format</th>
+                      <th>Container</th>
+                      <th>Approx. Size</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="yt-formats-table-body">
+                    <!-- Formats rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Desktop App Banner -->
+            <div class="yt-desktop-upsell">
+              <div class="upsell-icon"><i class="fa-brands fa-windows"></i></div>
+              <div class="upsell-text">
+                <h6>Need Bulk Channel Crawling & Zero Quota Limits?</h6>
+                <p>Download our standalone Windows Desktop App: <strong>YouTube Crawler & Intelligence Suite</strong>.</p>
+              </div>
+              <a href="downloads/YouTubeCrowler_v1.0_Windows.zip" download="YouTubeCrowler_v1.0_Windows.zip" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-download"></i> Download Windows Desktop App (.zip)
+              </a>
+            </div>
+
           </div>
 
         </div>
