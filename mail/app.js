@@ -468,24 +468,24 @@ function initActivationForm() {
           return;
         }
       }
+    }
 
-      // Create Cloudflare direct routing rule via API
-      try {
-        const ruleRes = await fetch('/api/create-rule', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            alias: `${prefix}@khanpro.me`,
-            destination: targetGmail
-          })
-        });
-        const ruleData = await ruleRes.json();
-        if (ruleData.success) {
-          console.log('[CF Rule Created]:', ruleData);
-        }
-      } catch (err) {
-        console.warn('Cloudflare rule warning (Catch-all still applies):', err);
+    // Create Cloudflare direct routing rule via API (for both Cluster and Custom destinations)
+    try {
+      const ruleRes = await fetch('/api/create-rule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          alias: `${prefix}@khanpro.me`,
+          destination: targetGmail
+        })
+      });
+      const ruleData = await ruleRes.json();
+      if (ruleData.success) {
+        console.log('[CF Rule Created]:', ruleData);
       }
+    } catch (err) {
+      console.warn('Cloudflare rule warning (Catch-all still applies):', err);
     }
 
     // Save mapping locally
