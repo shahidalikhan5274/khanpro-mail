@@ -121,6 +121,77 @@ class KhanProHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(400, {"error": "Invalid JSON body"})
             return
 
+        if self.path == "/api/yt-crawl":
+            yt_url = data.get("url", "").strip()
+            if not yt_url:
+                self.send_json(400, {"error": "Missing YouTube URL"})
+                return
+
+            try:
+                import yt_dlp
+                ydl_opts = {
+                    'skip_download': True,
+                    'extract_flat': 'in_playlist',
+                    'quiet': True,
+                    'no_warnings': True
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(yt_url, download=False)
+
+                formats = []
+                for f in (info.get("formats", []) or []):
+                    if f.get("url") and (f.get("vcodec") != "none" or f.get("acodec") != "none"):
+                        note = f.get("format_note", "") or f.get("resolution", "") or f.get("ext", "")
+                        size = f.get("filesize", 0) or f.get("filesize_approx", 0) or 0
+                        formats.append({
+                            "note": str(note),
+                            "ext": f.get("ext", "mp4"),
+                            "size_mb": round(size / (1024 * 1024), 1) if size else None,
+                            "url": f.get("url", "")
+                        })
+
+                clean_data = {
+                    "title": info.get("title", ""),
+                    "id": info.get("id", ""),
+                    "channel": info.get("uploader", "") or info.get("channel", ""),
+                    "channel_url": info.get("channel_url", ""),
+                    "view_count": info.get("view_count", 0),
+                    "like_count": info.get("like_count", 0),
+                    "duration": info.get("duration", 0),
+                    "upload_date": info.get("upload_date", ""),
+                    "description": info.get("description", "")[:1000],
+                    "tags": info.get("tags", []) or [],
+                    "categories": info.get("categories", []) or [],
+                    "thumbnail": info.get("thumbnail", ""),
+                    "formats": formats[:10]
+                }
+                self.send_json(200, {"success": True, "data": clean_data})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if self.path == "/api/auto-deploy":
+            try:
+                import auto_deploy
+                cfg = auto_deploy.load_or_ask_config()
+                if not cfg.get("repo") or not cfg.get("token"):
+                    self.send_json(400, {"error": "GitHub repo or token not configured yet. Please run ⚡_1_CLICK_DEPLOY.bat first."})
+                    return
+                # Trigger deploy in thread or synchronously
+                success_list = []
+                for rel_path in auto_deploy.TRACKED_FILES:
+                    ok, msg = auto_deploy.upload_file_to_github(cfg["repo"], rel_path, cfg["token"], cfg.get("branch", "main"))
+                    if ok:
+                        success_list.append(rel_path)
+                self.send_json(200, {
+                    "success": True,
+                    "synced": len(success_list),
+                    "message": f"Successfully pushed {len(success_list)} files to GitHub! Cloudflare is deploying live to khanpro.me."
+                })
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
         if self.path == "/api/send-verification":
             email = data.get("email", "").strip().lower()
             if not email or "@" not in email:
