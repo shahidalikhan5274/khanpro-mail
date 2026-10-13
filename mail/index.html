@@ -1393,188 +1393,271 @@
       </div>
     </div>
 
-    <!-- Modal 8: Live YouTube Video & Channel Crawler -->
+    <!-- Modal 8: YouTube Crowler (Original Desktop Tool UI) -->
     <div class="modal-overlay hidden" id="modal-yt-crawler">
-      <div class="modal-box modal-box-lg glass-panel">
-        <div class="modal-header">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="yt-header-icon"><i class="fa-brands fa-youtube"></i></div>
-            <div>
-              <h3>Live YouTube Video & Channel Crawler</h3>
-              <p class="text-muted text-sm">Extract live metadata, SEO tags, HD thumbnails, and video statistics</p>
-            </div>
+      <div class="modal-box modal-box-xl glass-panel ytcrowler-window">
+        <!-- Top YouTube Accent Stripe -->
+        <div class="ytcrowler-top-stripe"></div>
+
+        <!-- Window Header (Exact Desktop App Header) -->
+        <div class="ytcrowler-header">
+          <div class="ytcrowler-header-left">
+            <h2 class="ytcrowler-app-title">YouTube Crowler</h2>
+            <p class="ytcrowler-app-subtitle">Professional channel search · video metadata · export CSV / JSON</p>
+            <p class="ytcrowler-app-tip">Tip: pip install sv-ttk — zyada khubsurat dark theme ke liye</p>
           </div>
-          <button class="modal-close" data-close="modal-yt-crawler">&times;</button>
+          <button class="modal-close" data-close="modal-yt-crawler" title="Close">&times;</button>
         </div>
-        <div class="modal-body">
 
-          <!-- Search / Input Card -->
-          <div class="yt-search-card">
-            <form id="yt-crawl-form" class="yt-input-row">
-              <div class="input-addon-group" style="flex: 1;">
-                <span class="addon-prefix"><i class="fa-brands fa-youtube" style="color: #ef4444;"></i></span>
-                <input type="text" id="yt-url-input" class="form-input form-input-lg" placeholder="Paste YouTube Video URL (e.g. https://www.youtube.com/watch?v=... or youtu.be/...)" required>
+        <!-- Notebook Tabs -->
+        <div class="ytcrowler-tabs-nav">
+          <button type="button" class="ytcrowler-tab-btn active" data-yt-tab="tab-yt-channel-search">
+            Channel search
+          </button>
+          <button type="button" class="ytcrowler-tab-btn" data-yt-tab="tab-yt-video-crawl">
+            Video crawl
+          </button>
+        </div>
+
+        <div class="ytcrowler-body">
+          <!-- TAB 1: Channel search -->
+          <div class="ytcrowler-tab-pane active" id="tab-yt-channel-search">
+            <div class="ytcrowler-split">
+              <!-- Left Sidebar Column -->
+              <div class="ytcrowler-sidebar">
+                <!-- 1. Data source -->
+                <div class="yt-section-frame">
+                  <div class="yt-section-legend">Data source</div>
+                  <div class="yt-radio-group">
+                    <label class="yt-radio-label">
+                      <input type="radio" name="yt-data-source" value="api" checked id="yt-src-api">
+                      <span>YouTube Data API — subscriber filters</span>
+                    </label>
+                    <label class="yt-radio-label">
+                      <input type="radio" name="yt-data-source" value="noapi" id="yt-src-noapi">
+                      <span>Bina API (yt-dlp) — tez, key ki zaroorat nahi</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 2. API keys -->
+                <div class="yt-section-frame" id="yt-api-keys-section">
+                  <div class="yt-section-legend">API keys (priority: upar &rarr; neeche)</div>
+                  <p class="yt-subtext-gray">Har line par ek key. Pehli khatam / quota &rarr; agli. Phir se pehli try hoti hai.</p>
+                  <textarea id="yt-api-keys-textarea" rows="4" class="yt-code-textarea" spellcheck="false">AIzaSyC-6ZoLhcztyWP3AEYPD19xfV6n0CLZu1M</textarea>
+                  <div class="yt-keys-btn-row">
+                    <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-save-keys">Save locally</button>
+                    <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-clear-keys">Clear saved</button>
+                    <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-refresh-quota">Refresh quota</button>
+                  </div>
+                  <div class="yt-config-path-label" id="yt-config-path-text">C:\Users\Shahid\.yt_crowler\config.json</div>
+                  <div class="yt-quota-hint-label" id="yt-quota-hint-text">Quota (estimate aaj): Key 1: ~0/10000 units (0%)</div>
+                </div>
+
+                <!-- 3. Search type -->
+                <div class="yt-section-frame">
+                  <div class="yt-section-legend">Search type</div>
+                  <div class="yt-radio-group">
+                    <label class="yt-radio-label">
+                      <input type="radio" name="yt-search-type" value="name" checked id="yt-type-name">
+                      <span>Naam / keyword</span>
+                    </label>
+                    <label class="yt-radio-label">
+                      <input type="radio" name="yt-search-type" value="category" id="yt-type-category">
+                      <span>Category</span>
+                    </label>
+                  </div>
+                  <div class="form-group yt-field-row" id="yt-kw-wrap">
+                    <label class="yt-field-label">Keyword</label>
+                    <input type="text" id="yt-search-keyword" class="form-input yt-input-compact" placeholder="Keyword (e.g. food, gaming, tech)">
+                  </div>
+                  <div class="form-group yt-field-row hidden" id="yt-cat-wrap">
+                    <label class="yt-field-label">Category</label>
+                    <select id="yt-search-category" class="form-select yt-input-compact">
+                      <option value="Film & Animation" selected>Film & Animation</option>
+                      <option value="Autos & Vehicles">Autos & Vehicles</option>
+                      <option value="Music">Music</option>
+                      <option value="Pets & Animals">Pets & Animals</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Travel & Events">Travel & Events</option>
+                      <option value="Gaming">Gaming</option>
+                      <option value="People & Blogs">People & Blogs</option>
+                      <option value="Comedy">Comedy</option>
+                      <option value="Entertainment">Entertainment</option>
+                      <option value="News & Politics">News & Politics</option>
+                      <option value="Howto & Style">Howto & Style</option>
+                      <option value="Education">Education</option>
+                      <option value="Science & Technology">Science & Technology</option>
+                      <option value="Nonprofits & Activism">Nonprofits & Activism</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 4. Filters (API mode) -->
+                <div class="yt-section-frame" id="yt-filters-section">
+                  <div class="yt-section-legend">Filters (API mode)</div>
+                  <div class="yt-filters-grid">
+                    <div class="yt-grid-item">
+                      <label>Max ch.</label>
+                      <input type="number" id="yt-filter-max-results" class="form-input yt-input-compact" value="50" min="1" max="500">
+                    </div>
+                    <div class="yt-grid-item">
+                      <label>Min subs</label>
+                      <input type="number" id="yt-filter-min-subs" class="form-input yt-input-compact" value="0" min="0">
+                    </div>
+                    <div class="yt-grid-item">
+                      <label>Max subs (0=&#8734;)</label>
+                      <input type="number" id="yt-filter-max-subs" class="form-input yt-input-compact" value="0" min="0">
+                    </div>
+                    <div class="yt-grid-item">
+                      <label>Min videos</label>
+                      <input type="number" id="yt-filter-min-videos" class="form-input yt-input-compact" value="0" min="0">
+                    </div>
+                    <div class="yt-grid-item span-2">
+                      <label>Country</label>
+                      <select id="yt-filter-country" class="form-select yt-input-compact">
+                        <option value="" selected>Any</option>
+                        <option value="US">US — United States</option>
+                        <option value="PK">PK — Pakistan</option>
+                        <option value="IN">IN — India</option>
+                        <option value="GB">GB — United Kingdom</option>
+                        <option value="CA">CA — Canada</option>
+                        <option value="AU">AU — Australia</option>
+                        <option value="DE">DE — Germany</option>
+                        <option value="FR">FR — France</option>
+                        <option value="ID">ID — Indonesia</option>
+                        <option value="BR">BR — Brazil</option>
+                        <option value="MX">MX — Mexico</option>
+                        <option value="JP">JP — Japan</option>
+                        <option value="KR">KR — South Korea</option>
+                        <option value="SA">SA — Saudi Arabia</option>
+                        <option value="AE">AE — United Arab Emirates</option>
+                        <option value="EG">EG — Egypt</option>
+                        <option value="TR">TR — Turkey</option>
+                        <option value="BD">BD — Bangladesh</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="yt-checkbox-list">
+                    <label class="yt-check-label">
+                      <input type="checkbox" id="yt-check-forbid-tt">
+                      <span>Skip TikTok in description</span>
+                    </label>
+                    <label class="yt-check-label">
+                      <input type="checkbox" id="yt-check-forbid-fb">
+                      <span>Skip Facebook in description</span>
+                    </label>
+                    <label class="yt-check-label">
+                      <input type="checkbox" id="yt-check-exclude-verified">
+                      <span>Skip verified channels</span>
+                    </label>
+                  </div>
+                  <p class="yt-subtext-gray" style="margin-top: 8px;">
+                    Country: channel ka YouTube par set mulk (ISO). Verified filter page-badge heuristic se check hota hai.
+                  </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="yt-action-panel">
+                  <button type="button" class="btn btn-yt-primary w-100" id="btn-yt-run-search">
+                    <i class="fa-solid fa-play"></i> Run search
+                  </button>
+                  <div class="yt-export-btn-row">
+                    <button type="button" class="btn btn-secondary flex-1" id="btn-yt-export-csv">Export CSV</button>
+                    <button type="button" class="btn btn-secondary flex-1" id="btn-yt-export-json">Export JSON</button>
+                  </div>
+                </div>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg btn-yt-crawl" id="btn-run-yt-crawl">
-                <i class="fa-solid fa-spider"></i> Crawl YouTube Data
-              </button>
-            </form>
 
-            <div class="yt-samples-row">
-              <span class="text-xs text-muted">Try sample video:</span>
-              <button type="button" class="btn-sample-pill" data-yt-sample="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-                <i class="fa-solid fa-play text-xs"></i> Rick Astley - Never Gonna Give You Up
-              </button>
-              <button type="button" class="btn-sample-pill" data-yt-sample="https://www.youtube.com/watch?v=jNQXAC9IVRw">
-                <i class="fa-solid fa-play text-xs"></i> Me at the zoo (1st YouTube Video)
-              </button>
+              <!-- Right Results Column -->
+              <div class="ytcrowler-main">
+                <div class="yt-results-header">
+                  <div class="yt-results-title">Results</div>
+                  <div class="yt-results-status" id="yt-search-status-badge">Ready</div>
+                </div>
+                <div class="yt-results-instruction">
+                  Ctrl+C: row copy · URL column click: Chrome · Right-click: copy menu
+                </div>
+                <div class="yt-results-table-container">
+                  <table class="yt-data-table" id="yt-channels-table">
+                    <thead>
+                      <tr>
+                        <th>Channel</th>
+                        <th>Username</th>
+                        <th>Country</th>
+                        <th class="text-right">Subscribers</th>
+                        <th class="text-right">Videos</th>
+                        <th>URL (click)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="yt-channels-tbody">
+                      <tr>
+                        <td colspan="6" class="yt-empty-state">Pehle search chalao. Ready.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Live Scanning / Extraction Terminal -->
-          <div class="yt-scan-terminal hidden" id="yt-crawl-loading">
-            <div class="yt-scan-spinner">
-              <i class="fa-solid fa-circle-notch fa-spin text-accent"></i>
-              <span id="yt-scan-status-text">Crawling video streams & metadata...</span>
-            </div>
-            <div class="yt-scan-logs" id="yt-crawl-logs">
-              <div class="yt-log-item"><i class="fa-solid fa-check text-success"></i> Resolving YouTube endpoint stream...</div>
+          <!-- TAB 2: Video crawl -->
+          <div class="ytcrowler-tab-pane hidden" id="tab-yt-video-crawl">
+            <div class="ytcrowler-split">
+              <!-- Left Sidebar Column -->
+              <div class="ytcrowler-sidebar">
+                <div class="yt-section-frame">
+                  <div class="yt-section-legend">Source</div>
+                  <div class="form-group yt-field-row">
+                    <label class="yt-field-label">Channel ya playlist URL</label>
+                    <input type="text" id="yt-crawl-url-input" class="form-input yt-input-compact" placeholder="https://www.youtube.com/@channel/videos">
+                  </div>
+                  <div class="form-group yt-field-row">
+                    <label class="yt-field-label">Max videos (khali = sab)</label>
+                    <input type="number" id="yt-crawl-max-input" class="form-input yt-input-compact" placeholder="e.g. 50" min="1">
+                  </div>
+                  <label class="yt-check-label" style="margin-top: 8px;">
+                    <input type="checkbox" id="yt-crawl-full-meta-check">
+                    <span>Full metadata (slow)</span>
+                  </label>
+                </div>
+
+                <div class="yt-action-panel">
+                  <button type="button" class="btn btn-yt-primary w-100" id="btn-yt-run-crawl">
+                    <i class="fa-solid fa-play"></i> Run crawl
+                  </button>
+                  <div class="yt-export-btn-row">
+                    <button type="button" class="btn btn-secondary flex-1" id="btn-yt-crawl-export-csv">Export CSV</button>
+                    <button type="button" class="btn btn-secondary flex-1" id="btn-yt-crawl-export-json">Export JSON</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Results Column -->
+              <div class="ytcrowler-main">
+                <div class="yt-results-header">
+                  <div class="yt-results-title">Videos</div>
+                  <div class="yt-results-status" id="yt-crawl-status-badge">URL enter karein</div>
+                </div>
+                <div class="yt-results-table-container">
+                  <table class="yt-data-table" id="yt-videos-table">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th class="text-right">Views</th>
+                        <th>URL</th>
+                      </tr>
+                    </thead>
+                    <tbody id="yt-videos-tbody">
+                      <tr>
+                        <td colspan="3" class="yt-empty-state">URL enter karein aur Run crawl dabayein.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-
-          <!-- Result Dashboard -->
-          <div class="yt-results-wrap hidden" id="yt-crawl-results">
-            
-            <!-- Video Showcase Header -->
-            <div class="yt-video-banner">
-              <div class="yt-embed-wrap" id="yt-embed-container">
-                <iframe id="yt-iframe" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-              </div>
-              <div class="yt-video-info">
-                <div class="yt-badges-row">
-                  <span class="badge badge-success" id="yt-category-badge"><i class="fa-solid fa-layer-group"></i> Music</span>
-                  <span class="badge badge-info" id="yt-publish-date"><i class="fa-solid fa-calendar-days"></i> Oct 25, 2009</span>
-                </div>
-                <h4 id="yt-video-title">YouTube Video Title</h4>
-                <div class="yt-channel-row">
-                  <i class="fa-solid fa-circle-user text-muted"></i>
-                  <a href="#" target="_blank" rel="noopener noreferrer" id="yt-channel-link" class="yt-channel-name">Channel Name</a>
-                  <i class="fa-solid fa-circle-check text-info" title="Verified Creator"></i>
-                </div>
-              </div>
-            </div>
-
-            <!-- Key Stats Ribbon -->
-            <div class="yt-stats-grid">
-              <div class="yt-stat-card">
-                <span class="stat-icon"><i class="fa-solid fa-eye text-sky"></i></span>
-                <span class="stat-val" id="yt-views-count">0</span>
-                <span class="stat-lbl">Total Views</span>
-              </div>
-              <div class="yt-stat-card">
-                <span class="stat-icon"><i class="fa-solid fa-thumbs-up text-accent"></i></span>
-                <span class="stat-val" id="yt-likes-count">0</span>
-                <span class="stat-lbl">Likes</span>
-              </div>
-              <div class="yt-stat-card">
-                <span class="stat-icon"><i class="fa-solid fa-clock text-warning"></i></span>
-                <span class="stat-val" id="yt-duration">0:00</span>
-                <span class="stat-lbl">Duration</span>
-              </div>
-              <div class="yt-stat-card">
-                <span class="stat-icon"><i class="fa-solid fa-tags text-success"></i></span>
-                <span class="stat-val" id="yt-tags-count">0</span>
-                <span class="stat-lbl">SEO Tags</span>
-              </div>
-            </div>
-
-            <!-- HD Thumbnails Studio -->
-            <div class="yt-subpanel">
-              <div class="yt-subpanel-header">
-                <h5><i class="fa-solid fa-image"></i> HD Thumbnail Studio & Download</h5>
-                <span class="text-xs text-muted">1-Click Direct Image Extraction</span>
-              </div>
-              <div class="yt-thumb-studio-row">
-                <div class="yt-thumb-preview-box">
-                  <img id="yt-thumb-img" src="" alt="Video Thumbnail">
-                </div>
-                <div class="yt-thumb-downloads">
-                  <a id="btn-dl-thumb-max" href="#" target="_blank" download="thumbnail_1080p.jpg" class="btn btn-secondary btn-sm">
-                    <i class="fa-solid fa-download"></i> MaxRes (1080p HD)
-                  </a>
-                  <a id="btn-dl-thumb-hd" href="#" target="_blank" download="thumbnail_720p.jpg" class="btn btn-secondary btn-sm">
-                    <i class="fa-solid fa-download"></i> High Quality (720p)
-                  </a>
-                  <a id="btn-dl-thumb-mq" href="#" target="_blank" download="thumbnail_medium.jpg" class="btn btn-secondary btn-sm">
-                    <i class="fa-solid fa-download"></i> Medium Quality (480p)
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Extracted SEO Tags Cloud -->
-            <div class="yt-subpanel">
-              <div class="yt-subpanel-header">
-                <h5><i class="fa-solid fa-tags"></i> Extracted SEO Tags & Keywords (<span id="yt-tags-count-text">0</span>)</h5>
-                <button type="button" class="btn btn-primary btn-sm" id="btn-copy-all-tags">
-                  <i class="fa-solid fa-copy"></i> Copy All Tags (For YouTube Studio)
-                </button>
-              </div>
-              <div class="yt-tags-cloud" id="yt-tags-container">
-                <!-- Tags rendered dynamically -->
-              </div>
-            </div>
-
-            <!-- Description Box -->
-            <div class="yt-subpanel">
-              <div class="yt-subpanel-header">
-                <h5><i class="fa-solid fa-align-left"></i> Video Description</h5>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-description">
-                  <i class="fa-solid fa-copy"></i> Copy Description
-                </button>
-              </div>
-              <div class="yt-desc-box" id="yt-description-box">
-                <!-- Video description -->
-              </div>
-            </div>
-
-            <!-- Stream Formats Table (if returned by yt-dlp) -->
-            <div class="yt-subpanel" id="yt-formats-wrap">
-              <div class="yt-subpanel-header">
-                <h5><i class="fa-solid fa-film"></i> Available Stream Resolutions</h5>
-                <span class="text-xs text-muted">Direct Extraction Streams</span>
-              </div>
-              <div class="table-responsive">
-                <table class="data-table" id="yt-formats-table">
-                  <thead>
-                    <tr>
-                      <th>Resolution / Format</th>
-                      <th>Container</th>
-                      <th>Approx. Size</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="yt-formats-table-body">
-                    <!-- Formats rendered dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Desktop App Banner -->
-            <div class="yt-desktop-upsell">
-              <div class="upsell-icon"><i class="fa-brands fa-windows"></i></div>
-              <div class="upsell-text">
-                <h6>Need Bulk Channel Crawling & Zero Quota Limits?</h6>
-                <p>Download our standalone Windows Desktop App: <strong>YouTube Crawler & Intelligence Suite</strong>.</p>
-              </div>
-              <a href="downloads/YouTubeCrowler_v1.0_Windows.zip" download="YouTubeCrowler_v1.0_Windows.zip" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-download"></i> Download Windows Desktop App (.zip)
-              </a>
-            </div>
-
-          </div>
-
         </div>
       </div>
     </div>
