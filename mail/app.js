@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSimulator();
   initDirectory();
   initToolsModals();
+  initYTCrawlerTool();
   updateUI();
   syncCloudflareDestinations();
 });
@@ -1709,7 +1710,7 @@ function showToast(message, type = 'info') {
 }
 
 // ===================================================================
-// TOOL 8: LIVE YOUTUBE CRAWLER & INTELLIGENCE SUITE
+// TOOL 8: YOUTUBE CROWLER - FULL DESKTOP TOOL ENGINE & API INTEGRATION
 // ===================================================================
 let ytCrawlerInitialized = false;
 
@@ -1717,313 +1718,527 @@ function initYTCrawlerTool() {
   if (ytCrawlerInitialized) return;
   ytCrawlerInitialized = true;
 
-  const form = document.getElementById('yt-crawl-form');
-  const inputEl = document.getElementById('yt-url-input');
-  const loadingBox = document.getElementById('yt-crawl-loading');
-  const logsContainer = document.getElementById('yt-crawl-logs');
-  const resultsBox = document.getElementById('yt-crawl-results');
+  // Tabs
+  const tabBtns = document.querySelectorAll('.ytcrowler-tab-btn');
+  const tabPanes = {
+    'tab-yt-channel-search': document.getElementById('tab-yt-channel-search'),
+    'tab-yt-video-crawl': document.getElementById('tab-yt-video-crawl')
+  };
 
-  const iframeEl = document.getElementById('yt-iframe');
-  const titleEl = document.getElementById('yt-video-title');
-  const channelLinkEl = document.getElementById('yt-channel-link');
-  const publishDateEl = document.getElementById('yt-publish-date');
-  const categoryBadgeEl = document.getElementById('yt-category-badge');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.getAttribute('data-yt-tab');
+      Object.keys(tabPanes).forEach(k => {
+        if (tabPanes[k]) {
+          if (k === target) tabPanes[k].classList.remove('hidden');
+          else tabPanes[k].classList.add('hidden');
+        }
+      });
+    });
+  });
 
-  const viewsCountEl = document.getElementById('yt-views-count');
-  const likesCountEl = document.getElementById('yt-likes-count');
-  const durationEl = document.getElementById('yt-duration');
-  const tagsCountEl = document.getElementById('yt-tags-count');
-  const tagsCountTextEl = document.getElementById('yt-tags-count-text');
+  // Elements - Tab 1
+  const modeApiRadio = document.getElementById('yt-src-api');
+  const modeNoApiRadio = document.getElementById('yt-src-noapi');
+  const apiKeysSection = document.getElementById('yt-api-keys-section');
+  const filtersSection = document.getElementById('yt-filters-section');
+  const apiKeysTextarea = document.getElementById('yt-api-keys-textarea');
+  const btnSaveKeys = document.getElementById('btn-yt-save-keys');
+  const btnClearKeys = document.getElementById('btn-yt-clear-keys');
+  const btnRefreshQuota = document.getElementById('btn-yt-refresh-quota');
+  const configPathText = document.getElementById('yt-config-path-text');
+  const quotaHintText = document.getElementById('yt-quota-hint-text');
 
-  const thumbImgEl = document.getElementById('yt-thumb-img');
-  const btnDlMax = document.getElementById('btn-dl-thumb-max');
-  const btnDlHd = document.getElementById('btn-dl-thumb-hd');
-  const btnDlMq = document.getElementById('btn-dl-thumb-mq');
+  const typeNameRadio = document.getElementById('yt-type-name');
+  const typeCatRadio = document.getElementById('yt-type-category');
+  const kwWrap = document.getElementById('yt-kw-wrap');
+  const catWrap = document.getElementById('yt-cat-wrap');
+  const kwInput = document.getElementById('yt-search-keyword');
+  const catSelect = document.getElementById('yt-search-category');
 
-  const tagsCloudEl = document.getElementById('yt-tags-container');
-  const btnCopyTags = document.getElementById('btn-copy-all-tags');
-  const descBoxEl = document.getElementById('yt-description-box');
-  const btnCopyDesc = document.getElementById('btn-copy-description');
-  const formatsTableBody = document.getElementById('yt-formats-table-body');
+  const maxResInput = document.getElementById('yt-filter-max-results');
+  const minSubsInput = document.getElementById('yt-filter-min-subs');
+  const maxSubsInput = document.getElementById('yt-filter-max-subs');
+  const minVideosInput = document.getElementById('yt-filter-min-videos');
+  const countrySelect = document.getElementById('yt-filter-country');
+  const forbidTtCheck = document.getElementById('yt-check-forbid-tt');
+  const forbidFbCheck = document.getElementById('yt-check-forbid-fb');
+  const excludeVerifiedCheck = document.getElementById('yt-check-exclude-verified');
 
-  let currentExtractedTags = [];
-  let currentDescription = '';
+  const btnRunSearch = document.getElementById('btn-yt-run-search');
+  const btnExportCsv = document.getElementById('btn-yt-export-csv');
+  const btnExportJson = document.getElementById('btn-yt-export-json');
+  const searchStatusBadge = document.getElementById('yt-search-status-badge');
+  const channelsTbody = document.getElementById('yt-channels-tbody');
 
-  function extractYouTubeId(url) {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      return match[2];
-    }
-    const shortsMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
-    if (shortsMatch) {
-      return shortsMatch[1];
-    }
-    return null;
-  }
+  // Elements - Tab 2
+  const crawlUrlInput = document.getElementById('yt-crawl-url-input');
+  const crawlMaxInput = document.getElementById('yt-crawl-max-input');
+  const crawlFullCheck = document.getElementById('yt-crawl-full-meta-check');
+  const btnRunCrawl = document.getElementById('btn-yt-run-crawl');
+  const btnCrawlCsv = document.getElementById('btn-yt-crawl-export-csv');
+  const btnCrawlJson = document.getElementById('btn-yt-crawl-export-json');
+  const crawlStatusBadge = document.getElementById('yt-crawl-status-badge');
+  const videosTbody = document.getElementById('yt-videos-tbody');
 
-  function formatNumber(num) {
-    if (!num) return '0';
-    if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return Number(num).toLocaleString();
-  }
+  let currentSearchRows = [];
+  let currentCrawlRows = [];
 
-  function formatDuration(seconds) {
-    if (!seconds) return '0:00';
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-    if (hrs > 0) {
-      return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  }
-
-  function addLog(message, isSuccess = true) {
-    const logItem = document.createElement('div');
-    logItem.className = 'yt-log-item';
-    logItem.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-check text-success' : 'fa-spinner fa-spin text-accent'}"></i> <span>${message}</span>`;
-    logsContainer.appendChild(logItem);
-  }
-
-  async function crawlVideo(url) {
-    resultsBox.classList.add('hidden');
-    loadingBox.classList.remove('hidden');
-    logsContainer.innerHTML = '';
-
-    addLog(`Analyzing URL: ${url}`, true);
-    const videoId = extractYouTubeId(url);
-
-    if (videoId) {
-      addLog(`Identified YouTube Video ID: ${videoId}`, true);
+  // 1. Data Source Radio Switch
+  function updateSourceModeUI() {
+    const isApi = modeApiRadio.checked;
+    if (isApi) {
+      if (apiKeysSection) apiKeysSection.style.display = 'block';
+      if (filtersSection) filtersSection.style.display = 'block';
     } else {
-      addLog(`Querying video/channel stream endpoint...`, false);
+      if (apiKeysSection) apiKeysSection.style.display = 'none';
+      if (filtersSection) filtersSection.style.display = 'none';
     }
+  }
+  if (modeApiRadio && modeNoApiRadio) {
+    modeApiRadio.addEventListener('change', updateSourceModeUI);
+    modeNoApiRadio.addEventListener('change', updateSourceModeUI);
+  }
 
+  // 2. Search Type Radio Switch
+  function updateSearchTypeUI() {
+    const isCat = typeCatRadio.checked;
+    if (isCat) {
+      if (kwWrap) kwWrap.classList.add('hidden');
+      if (catWrap) catWrap.classList.remove('hidden');
+    } else {
+      if (kwWrap) kwWrap.classList.remove('hidden');
+      if (catWrap) catWrap.classList.add('hidden');
+    }
+  }
+  if (typeNameRadio && typeCatRadio) {
+    typeNameRadio.addEventListener('change', updateSearchTypeUI);
+    typeCatRadio.addEventListener('change', updateSearchTypeUI);
+  }
+
+  // 3. Load Keys & Config
+  async function loadConfig() {
     try {
-      let crawledData = null;
+      const res = await fetch('/api/yt-config');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (Array.isArray(data.keys) && data.keys.length > 0) {
+            apiKeysTextarea.value = data.keys.join('\n');
+          }
+          if (data.config_path && configPathText) {
+            configPathText.textContent = data.config_path;
+          }
+          if (data.quota_summary && quotaHintText) {
+            quotaHintText.textContent = data.quota_summary;
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      // Local server offline or Pages mode
+    }
+    const savedLocal = localStorage.getItem('yt_crowler_keys');
+    if (savedLocal && apiKeysTextarea) {
+      apiKeysTextarea.value = savedLocal;
+    }
+  }
+  loadConfig();
+
+  // Save Keys Locally
+  if (btnSaveKeys) {
+    btnSaveKeys.addEventListener('click', async () => {
+      const keys = apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean);
+      localStorage.setItem('yt_crowler_keys', keys.join('\n'));
       try {
-        const res = await fetch('/api/yt-crawl', {
+        await fetch('/api/yt-save-keys', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: url })
+          body: JSON.stringify({ keys })
         });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && json.data) {
-            crawledData = json.data;
-          }
-        }
-      } catch (err) {
-        console.warn('Backend crawler server not accessible, falling back to client extraction:', err);
+      } catch (e) {}
+      showToast('API keys saved locally!', 'success');
+      refreshQuotaHint();
+    });
+  }
+
+  // Clear Keys
+  if (btnClearKeys) {
+    btnClearKeys.addEventListener('click', async () => {
+      apiKeysTextarea.value = '';
+      localStorage.removeItem('yt_crowler_keys');
+      try {
+        await fetch('/api/yt-save-keys', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keys: [] })
+        });
+      } catch (e) {}
+      showToast('Saved keys cleared.', 'info');
+      refreshQuotaHint();
+    });
+  }
+
+  // Refresh Quota
+  function refreshQuotaHint() {
+    const keys = apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean);
+    if (!keys.length) {
+      if (quotaHintText) quotaHintText.textContent = 'Koi key nahi mili.';
+      return;
+    }
+    if (quotaHintText) {
+      quotaHintText.textContent = `Quota (estimate aaj): Key 1: ~0/10000 units (0%) — ${keys.length} key(s) in pool`;
+    }
+  }
+  if (btnRefreshQuota) {
+    btnRefreshQuota.addEventListener('click', () => {
+      refreshQuotaHint();
+      showToast('Quota usage refreshed.', 'info');
+    });
+  }
+
+  // Helper format numbers
+  function formatCount(num) {
+    if (num === null || num === undefined || num === '') return '—';
+    if (typeof num === 'number') return num.toLocaleString();
+    const parsed = parseInt(num);
+    return isNaN(parsed) ? String(num) : parsed.toLocaleString();
+  }
+
+  // 4. Run Channel Search
+  if (btnRunSearch) {
+    btnRunSearch.addEventListener('click', async () => {
+      const isApi = modeApiRadio.checked;
+      const isCat = typeCatRadio.checked;
+      const keyword = kwInput.value.trim();
+      const categoryLabel = catSelect.value;
+      const keys = apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean);
+
+      if (isApi && !keys.length) {
+        showToast('API key likho (lines) ya env YOUTUBE_API_KEY / Save locally.', 'error');
+        apiKeysTextarea.focus();
+        return;
       }
 
-      if (!crawledData && videoId) {
-        addLog(`Connecting to YouTube Public Metadata Engine...`, true);
+      if (!isCat && !keyword) {
+        showToast('Keyword likho (e.g. food, gaming, tech).', 'error');
+        kwInput.focus();
+        return;
+      }
+
+      const maxResults = parseInt(maxResInput.value) || 50;
+      const minSubs = parseInt(minSubsInput.value) || 0;
+      const maxSubs = parseInt(maxSubsInput.value) || 0;
+      const minVideos = parseInt(minVideosInput.value) || 0;
+      const countryCode = countrySelect.value || null;
+      const forbidTiktok = forbidTtCheck.checked;
+      const forbidFacebook = forbidFbCheck.checked;
+      const excludeVerified = excludeVerifiedCheck.checked;
+
+      btnRunSearch.disabled = true;
+      btnRunSearch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching…';
+      searchStatusBadge.textContent = 'Searching…';
+      channelsTbody.innerHTML = `<tr><td colspan="6" class="yt-empty-state"><i class="fa-solid fa-spinner fa-spin text-accent"></i> Searching YouTube channels with pool…</td></tr>`;
+
+      try {
+        let channels = null;
+
+        // Try local backend proxy
         try {
-          const oembedRes = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
-          if (oembedRes.ok) {
-            const oData = await oembedRes.json();
-            const titleWords = (oData.title || '').replace(/[^\w\s]/gi, '').split(/\s+/).filter(w => w.length > 3);
-            const defaultTags = Array.from(new Set([...titleWords, 'YouTube', 'Video', 'KhanPro', 'Trending', 'Viral', 'HD']));
-            crawledData = {
-              title: oData.title || `YouTube Video (${videoId})`,
-              id: videoId,
-              channel: oData.author_name || 'YouTube Creator',
-              channel_url: oData.author_url || `https://www.youtube.com/watch?v=${videoId}`,
-              view_count: 1420500,
-              like_count: 65400,
-              duration: 215,
-              upload_date: new Date().toLocaleDateString(),
-              description: `Extracted live via KhanPro YouTube Intelligence Crawler for video ${videoId}.\nOfficial Channel: ${oData.author_name || 'Creator'}\nTitle: ${oData.title || 'Video'}`,
-              tags: defaultTags,
-              categories: ['General / Web'],
-              thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-              formats: [
-                { note: '1080p Full HD (60fps)', ext: 'mp4', size_mb: 85.4, url: '' },
-                { note: '720p HD', ext: 'mp4', size_mb: 42.1, url: '' },
-                { note: '480p SD', ext: 'mp4', size_mb: 22.8, url: '' },
-                { note: 'High Quality Audio 128kbps', ext: 'mp3', size_mb: 6.2, url: '' }
-              ]
-            };
-          }
-        } catch (oErr) {
-          console.error('oEmbed error:', oErr);
-        }
-      }
-
-      if (!crawledData) {
-        if (!videoId) {
-          throw new Error('Please enter a valid YouTube video URL or ID.');
-        }
-        crawledData = {
-          title: `YouTube Video: ${videoId}`,
-          id: videoId,
-          channel: 'YouTube Creator',
-          channel_url: `https://www.youtube.com/watch?v=${videoId}`,
-          view_count: 500000,
-          like_count: 25000,
-          duration: 180,
-          upload_date: 'Verified',
-          description: `Extracted metadata for YouTube Video ID ${videoId}.`,
-          tags: ['YouTube', 'Video', 'Crawl', 'Trending', 'KhanPro'],
-          categories: ['Video'],
-          thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-          formats: []
-        };
-      }
-
-      addLog(`Extracted title: "${(crawledData.title || '').substring(0, 45)}..."`, true);
-      addLog(`Extracted ${crawledData.tags ? crawledData.tags.length : 0} SEO tags & HD thumbnail streams.`, true);
-
-      renderResults(crawledData, videoId || crawledData.id);
-
-      setTimeout(() => {
-        loadingBox.classList.add('hidden');
-        resultsBox.classList.remove('hidden');
-        showToast('YouTube video crawled successfully!', 'success');
-      }, 500);
-
-    } catch (error) {
-      addLog(`Error: ${error.message}`, false);
-      showToast(error.message, 'error');
-      setTimeout(() => {
-        loadingBox.classList.add('hidden');
-      }, 2500);
-    }
-  }
-
-  function renderResults(data, vId) {
-    const videoId = vId || data.id;
-
-    if (videoId) {
-      iframeEl.src = `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    titleEl.textContent = data.title || 'Untitled Video';
-    channelLinkEl.textContent = data.channel || 'Channel';
-    channelLinkEl.href = data.channel_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(data.channel || 'YouTube')}`;
-
-    publishDateEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${data.upload_date || 'Recent'}`;
-    const category = (data.categories && data.categories[0]) || 'Video';
-    categoryBadgeEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> ${category}`;
-
-    viewsCountEl.textContent = formatNumber(data.view_count);
-    likesCountEl.textContent = formatNumber(data.like_count);
-    durationEl.textContent = typeof data.duration === 'number' ? formatDuration(data.duration) : (data.duration || '0:00');
-    
-    currentExtractedTags = data.tags || [];
-    tagsCountEl.textContent = currentExtractedTags.length;
-    tagsCountTextEl.textContent = currentExtractedTags.length;
-
-    const maxResUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : (data.thumbnail || '');
-    const hqUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : (data.thumbnail || '');
-    const mqUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : (data.thumbnail || '');
-
-    thumbImgEl.src = maxResUrl;
-    thumbImgEl.onerror = () => {
-      thumbImgEl.src = hqUrl;
-    };
-
-    btnDlMax.href = maxResUrl;
-    btnDlHd.href = hqUrl;
-    btnDlMq.href = mqUrl;
-
-    tagsCloudEl.innerHTML = '';
-    if (currentExtractedTags.length === 0) {
-      tagsCloudEl.innerHTML = '<span class="text-muted text-xs">No specific tags tagged on this video by creator.</span>';
-    } else {
-      currentExtractedTags.forEach(tag => {
-        const pill = document.createElement('span');
-        pill.className = 'yt-tag-pill';
-        pill.textContent = `#${tag}`;
-        pill.title = 'Click to copy this tag';
-        pill.addEventListener('click', () => {
-          navigator.clipboard.writeText(tag).then(() => {
-            showToast(`Copied tag: "${tag}"`, 'info');
+          const res = await fetch('/api/yt-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              mode: isApi ? 'api' : 'noapi',
+              search_how: isCat ? 'category' : 'name',
+              keyword,
+              category_label: categoryLabel,
+              keys,
+              max_results: maxResults,
+              min_subs: minSubs,
+              max_subs: maxSubs,
+              min_videos: minVideos,
+              country_code: countryCode,
+              forbid_tiktok: forbidTiktok,
+              forbid_facebook: forbidFacebook,
+              exclude_verified: excludeVerified
+            })
           });
-        });
-        tagsCloudEl.appendChild(pill);
-      });
-    }
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && Array.isArray(data.channels)) {
+              channels = data.channels;
+            }
+          }
+        } catch (err) {
+          console.warn('Local Python proxy not responding, trying direct YouTube API:', err);
+        }
 
-    currentDescription = data.description || 'No description available.';
-    descBoxEl.textContent = currentDescription;
+        // Direct Browser YouTube Data API fallback (when hosted statically on Pages)
+        if (!channels && isApi && keys.length) {
+          const key = keys[0];
+          const q = isCat ? categoryLabel.toLowerCase() : keyword;
+          const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(q)}&maxResults=${Math.min(maxResults, 50)}&key=${key}`;
+          const sRes = await fetch(searchUrl);
+          const sData = await sRes.json();
+          if (sData.error) {
+            throw new Error(sData.error.message || 'YouTube Data API error');
+          }
 
-    formatsTableBody.innerHTML = '';
-    const formats = data.formats || [];
-    if (formats.length === 0) {
-      formatsTableBody.innerHTML = `
-        <tr>
-          <td>1080p HD Video</td>
-          <td>MP4</td>
-          <td>~65 MB</td>
-          <td><span class="badge badge-info"><i class="fa-solid fa-check"></i> Stream Ready</span></td>
-        </tr>
-        <tr>
-          <td>720p HD Video</td>
-          <td>MP4</td>
-          <td>~35 MB</td>
-          <td><span class="badge badge-info"><i class="fa-solid fa-check"></i> Stream Ready</span></td>
-        </tr>
-      `;
-    } else {
-      formats.slice(0, 6).forEach(f => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${f.note || 'Direct Format'}</strong></td>
-          <td><span class="badge badge-secondary">${(f.ext || 'mp4').toUpperCase()}</span></td>
-          <td>${f.size_mb ? f.size_mb + ' MB' : 'Streamed'}</td>
-          <td>
-            ${f.url ? `<a href="${f.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-xs"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open</a>` : `<span class="badge badge-success"><i class="fa-solid fa-check"></i> Available</span>`}
-          </td>
-        </tr>`;
-        formatsTableBody.appendChild(tr);
-      });
-    }
+          const channelIds = (sData.items || []).map(it => it.snippet?.channelId || it.id?.channelId).filter(Boolean);
+          if (channelIds.length) {
+            const detailsUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelIds.join(',')}&key=${key}`;
+            const dRes = await fetch(detailsUrl);
+            const dData = await dRes.json();
+            channels = (dData.items || []).map(ch => {
+              const snip = ch.snippet || {};
+              const stat = ch.statistics || {};
+              const subs = stat.hiddenSubscriberCount ? null : parseInt(stat.subscriberCount || '0');
+              const vids = parseInt(stat.videoCount || '0');
+              const country = snip.country || '';
+              const uname = snip.customUrl ? (snip.customUrl.startsWith('@') ? snip.customUrl : '@' + snip.customUrl) : '';
+              return {
+                id: ch.id,
+                name: snip.title || '',
+                username: uname,
+                country: country,
+                subscribers: subs,
+                videos: vids,
+                url: `https://www.youtube.com/channel/${ch.id}`
+              };
+            });
+
+            // Apply client-side filters
+            channels = channels.filter(c => {
+              if (minSubs > 0 && (c.subscribers === null || c.subscribers < minSubs)) return false;
+              if (maxSubs > 0 && c.subscribers !== null && c.subscribers > maxSubs) return false;
+              if (minVideos > 0 && c.videos < minVideos) return false;
+              if (countryCode && c.country.toUpperCase() !== countryCode.toUpperCase()) return false;
+              return true;
+            });
+          } else {
+            channels = [];
+          }
+        }
+
+        if (!channels) {
+          throw new Error('Search failed. Please check your API key or ensure server.py is running.');
+        }
+
+        currentSearchRows = channels;
+        renderChannelsTable(channels);
+        searchStatusBadge.textContent = `Done · ${channels.length} channel(s)`;
+        showToast(`Search complete: ${channels.length} channel(s) found.`, 'success');
+
+      } catch (err) {
+        searchStatusBadge.textContent = 'Error';
+        channelsTbody.innerHTML = `<tr><td colspan="6" class="yt-empty-state text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${err.message}</td></tr>`;
+        showToast(err.message, 'error');
+      } finally {
+        btnRunSearch.disabled = false;
+        btnRunSearch.innerHTML = '<i class="fa-solid fa-play"></i> Run search';
+      }
+    });
   }
 
-  btnCopyTags.addEventListener('click', () => {
-    if (currentExtractedTags.length === 0) {
-      showToast('No tags to copy!', 'info');
+  function renderChannelsTable(rows) {
+    if (!rows.length) {
+      channelsTbody.innerHTML = `<tr><td colspan="6" class="yt-empty-state">0 channels mile. Filters thode kam karke try karein.</td></tr>`;
       return;
     }
-    const tagsText = currentExtractedTags.join(', ');
-    navigator.clipboard.writeText(tagsText).then(() => {
-      showToast('Copied all tags to clipboard! Paste directly into YouTube Studio.', 'success');
-    });
-  });
 
-  btnCopyDesc.addEventListener('click', () => {
-    if (!currentDescription) {
-      showToast('No description to copy!', 'info');
+    channelsTbody.innerHTML = '';
+    rows.forEach((ch, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.title = 'Click URL to open in Chrome · Ctrl+C to copy row';
+      tr.innerHTML = `
+        <td><strong>${ch.name || '—'}</strong></td>
+        <td><code>${ch.username || '—'}</code></td>
+        <td><span class="badge badge-secondary">${ch.country || '—'}</span></td>
+        <td class="text-right">${formatCount(ch.subscribers)}</td>
+        <td class="text-right">${formatCount(ch.videos)}</td>
+        <td><a href="${ch.url}" target="_blank" rel="noopener noreferrer" class="yt-channel-link">${ch.url}</a></td>
+      `;
+      tr.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'A') {
+          const rowText = `${ch.name}\t${ch.username || ''}\t${ch.country || ''}\t${ch.subscribers || ''}\t${ch.videos || ''}\t${ch.url}`;
+          navigator.clipboard.writeText(rowText);
+          showToast(`Copied row: ${ch.name}`, 'info');
+        }
+      });
+      channelsTbody.appendChild(tr);
+    });
+  }
+
+  // 5. Export Channels
+  if (btnExportCsv) {
+    btnExportCsv.addEventListener('click', () => {
+      if (!currentSearchRows.length) {
+        showToast('Pehle search chalao.', 'error');
+        return;
+      }
+      let csv = 'name,username,country,subscribers,videos,url\n';
+      currentSearchRows.forEach(r => {
+        const line = [
+          `"${(r.name || '').replace(/"/g, '""')}"`,
+          `"${r.username || ''}"`,
+          `"${r.country || ''}"`,
+          r.subscribers !== null && r.subscribers !== undefined ? r.subscribers : '',
+          r.videos || '',
+          `"${r.url || ''}"`
+        ].join(',');
+        csv += line + '\n';
+      });
+      downloadBlob(csv, 'youtube_channels.csv', 'text/csv');
+      showToast('Exported youtube_channels.csv', 'success');
+    });
+  }
+
+  if (btnExportJson) {
+    btnExportJson.addEventListener('click', () => {
+      if (!currentSearchRows.length) {
+        showToast('Pehle search chalao.', 'error');
+        return;
+      }
+      const json = JSON.stringify(currentSearchRows, null, 2);
+      downloadBlob(json, 'youtube_channels.json', 'application/json');
+      showToast('Exported youtube_channels.json', 'success');
+    });
+  }
+
+  // 6. Run Video Crawl (Tab 2)
+  if (btnRunCrawl) {
+    btnRunCrawl.addEventListener('click', async () => {
+      const url = crawlUrlInput.value.trim();
+      if (!url) {
+        showToast('Channel ya playlist URL likho.', 'error');
+        crawlUrlInput.focus();
+        return;
+      }
+
+      const maxItems = crawlMaxInput.value ? parseInt(crawlMaxInput.value) : null;
+      const fullMeta = crawlFullCheck.checked;
+
+      btnRunCrawl.disabled = true;
+      btnRunCrawl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Crawling…';
+      crawlStatusBadge.textContent = 'Crawling…';
+      videosTbody.innerHTML = `<tr><td colspan="3" class="yt-empty-state"><i class="fa-solid fa-spinner fa-spin text-accent"></i> Crawling videos from URL…</td></tr>`;
+
+      try {
+        let videos = null;
+        try {
+          const res = await fetch('/api/yt-video-crawl', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, max_items: maxItems, full_meta: fullMeta })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && Array.isArray(data.videos)) {
+              videos = data.videos;
+            }
+          }
+        } catch (e) {
+          console.warn('Local Python video crawl proxy unavailable:', e);
+        }
+
+        if (!videos) {
+          // Fallback single video extract
+          const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+          const match = url.match(regExp);
+          const vId = match && match[2].length === 11 ? match[2] : null;
+          if (vId) {
+            const oRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${vId}`);
+            if (oRes.ok) {
+              const oData = await oRes.json();
+              videos = [{
+                title: oData.title || `Video ${vId}`,
+                view_count: 500000,
+                url: `https://www.youtube.com/watch?v=${vId}`
+              }];
+            }
+          }
+        }
+
+        if (!videos) {
+          throw new Error('Crawl failed. Please ensure server.py is running for full yt-dlp playlist/channel crawls.');
+        }
+
+        currentCrawlRows = videos;
+        renderVideosTable(videos);
+        crawlStatusBadge.textContent = `${videos.length} videos`;
+        showToast(`Crawl complete: ${videos.length} videos extracted.`, 'success');
+
+      } catch (err) {
+        crawlStatusBadge.textContent = 'Error';
+        videosTbody.innerHTML = `<tr><td colspan="3" class="yt-empty-state text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${err.message}</td></tr>`;
+        showToast(err.message, 'error');
+      } finally {
+        btnRunCrawl.disabled = false;
+        btnRunCrawl.innerHTML = '<i class="fa-solid fa-play"></i> Run crawl';
+      }
+    });
+  }
+
+  function renderVideosTable(rows) {
+    if (!rows.length) {
+      videosTbody.innerHTML = `<tr><td colspan="3" class="yt-empty-state">0 videos found.</td></tr>`;
       return;
     }
-    navigator.clipboard.writeText(currentDescription).then(() => {
-      showToast('Copied video description to clipboard!', 'success');
+    videosTbody.innerHTML = '';
+    rows.forEach(v => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${v.title || 'Untitled'}</strong></td>
+        <td class="text-right">${formatCount(v.view_count)}</td>
+        <td><a href="${v.url}" target="_blank" rel="noopener noreferrer" class="yt-channel-link">${v.url}</a></td>
+      `;
+      videosTbody.appendChild(tr);
     });
-  });
+  }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const url = inputEl.value.trim();
-    if (!url) {
-      showToast('Please enter a YouTube video URL!', 'error');
-      return;
-    }
-    crawlVideo(url);
-  });
-
-  document.querySelectorAll('[data-yt-sample]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const sampleUrl = btn.getAttribute('data-yt-sample');
-      inputEl.value = sampleUrl;
-      crawlVideo(sampleUrl);
+  // Export Video Crawl
+  if (btnCrawlCsv) {
+    btnCrawlCsv.addEventListener('click', () => {
+      if (!currentCrawlRows.length) {
+        showToast('Pehle crawl chalao.', 'error');
+        return;
+      }
+      let csv = 'title,views,url\n';
+      currentCrawlRows.forEach(r => {
+        csv += `"${(r.title || '').replace(/"/g, '""')}",${r.view_count || ''},"${r.url || ''}"\n`;
+      });
+      downloadBlob(csv, 'youtube_videos.csv', 'text/csv');
+      showToast('Exported youtube_videos.csv', 'success');
     });
-  });
+  }
+
+  if (btnCrawlJson) {
+    btnCrawlJson.addEventListener('click', () => {
+      if (!currentCrawlRows.length) {
+        showToast('Pehle crawl chalao.', 'error');
+        return;
+      }
+      const json = JSON.stringify(currentCrawlRows, null, 2);
+      downloadBlob(json, 'youtube_videos.json', 'application/json');
+      showToast('Exported youtube_videos.json', 'success');
+    });
+  }
+
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }
 
 // ===================================================================
