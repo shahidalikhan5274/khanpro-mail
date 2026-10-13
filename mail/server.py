@@ -110,6 +110,22 @@ class KhanProHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(500, {"error": str(e)})
             return
 
+        if path == "/api/yt-config":
+            try:
+                import crawler, youtube_api_pool
+                keys = crawler.load_saved_api_keys()
+                cfg_path = str(crawler.api_key_config_path())
+                q_summary = youtube_api_pool.quota_summary_text(keys) if keys else "Koi key nahi mili."
+                self.send_json(200, {
+                    "success": True,
+                    "keys": keys,
+                    "config_path": cfg_path,
+                    "quota_summary": q_summary
+                })
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
         self.send_json(404, {"error": "API route not found"})
 
     def handle_api_post(self):
@@ -166,6 +182,113 @@ class KhanProHandler(http.server.SimpleHTTPRequestHandler):
                     "formats": formats[:10]
                 }
                 self.send_json(200, {"success": True, "data": clean_data})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if self.path == "/api/yt-save-keys":
+            keys = data.get("keys", [])
+            try:
+                import crawler
+                crawler.save_api_keys_to_disk(keys)
+                self.send_json(200, {"success": True, "message": "API keys saved to ~/.yt_crowler/config.json"})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if self.path == "/api/yt-search":
+            mode = data.get("mode", "api")
+            search_how = data.get("search_how", "name")
+            keyword = data.get("keyword", "").strip()
+            category_label = data.get("category_label", "").strip()
+            keys = data.get("keys", [])
+            try:
+                max_results = int(data.get("max_results", 50))
+                min_subs = int(data.get("min_subs", 0))
+                max_subs_raw = int(data.get("max_subs", 0))
+                max_subs = None if max_subs_raw == 0 else max_subs_raw
+                min_videos = int(data.get("min_videos", 0))
+            except ValueError:
+                max_results, min_subs, max_subs, min_videos = 50, 0, None, 0
+
+            country_code = data.get("country_code", None)
+            forbid_tiktok = bool(data.get("forbid_tiktok", False))
+            forbid_facebook = bool(data.get("forbid_facebook", False))
+            exclude_verified = bool(data.get("exclude_verified", False))
+
+            try:
+                import crawler, youtube_api_pool
+                if mode == "api":
+                    if not keys:
+                        keys = crawler.load_saved_api_keys()
+                    if not keys:
+                        self.send_json(400, {"error": "API keys missing. Please enter at least 1 key."})
+                        return
+
+                    pool = youtube_api_pool.YouTubeApiPool(keys)
+                    if search_how == "category":
+                        cid = crawler.category_id_from_label(category_label)
+                        if not cid:
+                            self.send_json(400, {"error": f"Unknown category: {category_label}"})
+                            return
+                        channels = crawler.search_channels_by_category_api(
+                            pool,
+                            cid,
+                            max_results=max_results,
+                            min_subs=min_subs,
+                            max_subs=max_subs,
+                            min_videos=min_videos,
+                            forbid_tiktok=forbid_tiktok,
+                            forbid_facebook=forbid_facebook,
+                            country_code=country_code,
+                            exclude_verified=exclude_verified,
+                            quiet=True,
+                            cache_ttl_sec=90.0,
+                        )
+                    else:
+                        channels = crawler.search_channels(
+                            pool,
+                            keyword,
+                            max_results=max_results,
+                            min_subs=min_subs,
+                            max_subs=max_subs,
+                            min_videos=min_videos,
+                            forbid_tiktok=forbid_tiktok,
+                            forbid_facebook=forbid_facebook,
+                            country_code=country_code,
+                            exclude_verified=exclude_verified,
+                            quiet=True,
+                            cache_ttl_sec=90.0,
+                        )
+                else:
+                    q = category_label if search_how == "category" else keyword
+                    channels = crawler.search_channels_ytdlp(
+                        q,
+                        max_results=max_results,
+                        forbid_tiktok=forbid_tiktok,
+                        forbid_facebook=forbid_facebook,
+                        exclude_verified=exclude_verified,
+                        quiet=True,
+                    )
+
+                self.send_json(200, {"success": True, "channels": channels, "count": len(channels)})
+            except Exception as e:
+                self.send_json(500, {"error": str(e)})
+            return
+
+        if self.path == "/api/yt-video-crawl":
+            url = data.get("url", "").strip()
+            if not url:
+                self.send_json(400, {"error": "URL required."})
+                return
+            max_raw = data.get("max_items")
+            max_n = int(max_raw) if max_raw else None
+            full_meta = bool(data.get("full_meta", False))
+
+            try:
+                import crawler
+                videos = crawler.crawl(url, max_items=max_n, flat_only=not full_meta)
+                self.send_json(200, {"success": True, "videos": videos, "count": len(videos)})
             except Exception as e:
                 self.send_json(500, {"error": str(e)})
             return
