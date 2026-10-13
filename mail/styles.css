@@ -3076,4 +3076,339 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
+/* ===================================================================
+   YOUTUBE CROWLER DESKTOP APPLICATION STYLES (EXACT PYTHON GUI)
+   =================================================================== */
+.modal-box-xl {
+  max-width: 1120px;
+  width: 95%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  background: #0f1118;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+.ytcrowler-window {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 0, 51, 0.15);
+}
+.ytcrowler-top-stripe {
+  height: 3px;
+  background: #ff0033;
+  width: 100%;
+  flex-shrink: 0;
+}
+.ytcrowler-header {
+  background: #0d0d12;
+  padding: 18px 24px 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.ytcrowler-app-title {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f2f2f4;
+  margin: 0;
+  line-height: 1.2;
+}
+.ytcrowler-app-subtitle {
+  font-size: 0.95rem;
+  color: #8c8c9a;
+  margin: 4px 0 0 0;
+}
+.ytcrowler-app-tip {
+  font-size: 0.78rem;
+  color: #555560;
+  margin: 6px 0 0 0;
+}
+.ytcrowler-tabs-nav {
+  background: #13151f;
+  padding: 0 20px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+.ytcrowler-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ytcrowler-tab-btn:hover {
+  color: #ffffff;
+}
+.ytcrowler-tab-btn.active {
+  color: #ffffff;
+  border-bottom-color: #ff0033;
+  background: rgba(255, 255, 255, 0.04);
+}
+.ytcrowler-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  background: #0a0b10;
+}
+.ytcrowler-split {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .ytcrowler-split {
+    flex-direction: column;
+  }
+}
+.ytcrowler-sidebar {
+  width: 390px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(85vh - 180px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+@media (max-width: 900px) {
+  .ytcrowler-sidebar {
+    width: 100%;
+    max-height: none;
+  }
+}
+.ytcrowler-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #11131b;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 16px;
+}
+.yt-section-frame {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: rgba(18, 20, 28, 0.7);
+  position: relative;
+  margin-top: 8px;
+}
+.yt-section-legend {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: #141722;
+  padding: 0 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  border-radius: 3px;
+}
+.yt-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.yt-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+.yt-code-textarea {
+  width: 100%;
+  font-family: Consolas, monospace;
+  font-size: 0.82rem;
+  background: #07080c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  padding: 8px;
+  border-radius: 4px;
+  resize: vertical;
+  margin: 6px 0;
+}
+.yt-subtext-gray {
+  font-size: 0.74rem;
+  color: #888898;
+  margin: 4px 0;
+  line-height: 1.35;
+}
+.yt-keys-btn-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+.yt-config-path-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-family: monospace;
+  word-break: break-all;
+}
+.yt-quota-hint-label {
+  font-size: 0.72rem;
+  color: #818cf8;
+  margin-top: 3px;
+}
+.yt-field-row {
+  margin-top: 8px;
+}
+.yt-field-label {
+  display: block;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  margin-bottom: 4px;
+}
+.yt-input-compact {
+  padding: 6px 10px;
+  font-size: 0.84rem;
+  height: auto;
+}
+.yt-filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.yt-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+.yt-grid-item.span-2 {
+  grid-column: span 2;
+}
+.yt-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.yt-check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.btn-yt-primary {
+  background: #ff0033;
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-yt-primary:hover {
+  background: #e6002e;
+  box-shadow: 0 0 16px rgba(255, 0, 51, 0.4);
+}
+.yt-action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.yt-export-btn-row {
+  display: flex;
+  gap: 8px;
+}
+.yt-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.yt-results-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.yt-results-status {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.yt-results-instruction {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+.yt-results-table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(85vh - 250px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  background: #08090d;
+}
+.yt-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.yt-data-table th {
+  background: #161822;
+  color: #94a3b8;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.yt-data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+.yt-data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+.yt-empty-state {
+  text-align: center;
+  color: #64748b;
+  padding: 60px 20px;
+  font-style: italic;
+}
+.text-right {
+  text-align: right;
+}
+.yt-channel-link {
+  color: #38bdf8;
+  text-decoration: none;
+}
+.yt-channel-link:hover {
+  text-decoration: underline;
+}
+
+
 
