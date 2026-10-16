@@ -23,9 +23,9 @@ Aapka **Next-Gen Web Tools & Student Email Infrastructure Platform** mukammal re
    * Password Generator, QR Code Studio, DNS Inspector, Text Transformer tamam public visitors ke liye open hain. Isse domain ka **Trust Score** hamesha high rahega!
 2. **Student Mail Portal (Restricted):**
    * Jab aam public visitor aayega, to Student Mail Portal lock hoga (`Restricted Campus Service`).
-   * **Default Student Passkey:** `STUDENT-2026` (Aap jin students ko allow karenge, unhe yeh passkey denge taake woh apna email activate kar sakein).
+   * **Default Student Passkey:** `Rafay5@74` (Aap jin students ko allow karenge, unhe yeh passkey denge taake woh apna email activate kar sakein).
 3. **Master Admin Panel (Your Private Control):**
-   * **Default Master Admin Key:** `ADMIN-2026`
+   * **Default Master Admin Key:** `Shahid5@74`
    * Master Admin panel me aap baith kar jab chahein:
      * Student Passkey badal sakte hain.
      * Apna Master Admin Passkey badal sakte hain.
