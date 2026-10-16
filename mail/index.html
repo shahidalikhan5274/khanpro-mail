@@ -151,13 +151,13 @@
             <form id="passkey-unlock-form" class="gate-form">
               <div class="input-addon-group gate-input-wrap">
                 <span class="addon-prefix"><i class="fa-solid fa-key"></i></span>
-                <input type="password" id="gate-passkey-input" class="form-input" placeholder="Enter Access Passkey (e.g. STUDENT-2026)" required autocomplete="off">
+                <input type="password" id="gate-passkey-input" class="form-input" placeholder="Enter Access Passkey" required autocomplete="off">
                 <button type="submit" class="btn btn-primary" id="btn-unlock-gate">
                   <i class="fa-solid fa-unlock"></i> Unlock Access
                 </button>
               </div>
               <div class="gate-hint">
-                <span><i class="fa-solid fa-circle-info"></i> Default Student Key: <code>STUDENT-2026</code> | Master Admin: <code>ADMIN-2026</code></span>
+                <span><i class="fa-solid fa-shield-halved"></i> Authorized student access only. Contact administrator for access.</span>
               </div>
             </form>
           </div>
@@ -471,7 +471,7 @@
             <form id="admin-unlock-form" class="gate-form">
               <div class="input-addon-group gate-input-wrap">
                 <span class="addon-prefix"><i class="fa-solid fa-fingerprint"></i></span>
-                <input type="password" id="admin-key-input" class="form-input" placeholder="Enter Master Admin Key (Default: ADMIN-2026)" required autocomplete="off">
+                <input type="password" id="admin-key-input" class="form-input" placeholder="Enter Master Admin Key" required autocomplete="off">
                 <button type="submit" class="btn btn-primary" id="btn-unlock-admin">
                   <i class="fa-solid fa-key"></i> Verify Admin
                 </button>
@@ -502,16 +502,18 @@
             <form id="update-passkeys-form" class="passkey-form-grid">
               <div class="form-group flex-1">
                 <label class="form-label">Student Access Key (Given to students you permit):</label>
-                <div class="input-addon-group">
+                <div class="input-addon-group password-input-wrap" style="position: relative;">
                   <span class="addon-prefix"><i class="fa-solid fa-users-gear"></i></span>
-                  <input type="text" id="setting-student-passkey" class="form-input" value="STUDENT-2026" required>
+                  <input type="password" id="setting-student-passkey" class="form-input" value="Rafay5@74" required autocomplete="off">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-student-key" title="Show/Hide Key"><i class="fa-solid fa-eye"></i></button>
                 </div>
               </div>
               <div class="form-group flex-1">
                 <label class="form-label">Master Admin Key (Your private key):</label>
-                <div class="input-addon-group">
+                <div class="input-addon-group password-input-wrap" style="position: relative;">
                   <span class="addon-prefix"><i class="fa-solid fa-user-lock"></i></span>
-                  <input type="text" id="setting-admin-passkey" class="form-input" value="ADMIN-2026" required>
+                  <input type="password" id="setting-admin-passkey" class="form-input" value="Shahid5@74" required autocomplete="off">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-admin-key" title="Show/Hide Key"><i class="fa-solid fa-eye"></i></button>
                 </div>
               </div>
               <div class="form-actions-passkey">
