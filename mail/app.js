@@ -36,8 +36,19 @@ class EngineState {
       localStorage.setItem('khanpro_mappings', JSON.stringify(savedMappings));
     }
     this.mappings = savedMappings;
-    this.studentPasskey = localStorage.getItem('khanpro_student_passkey') || 'STUDENT-2026';
-    this.adminPasskey = localStorage.getItem('khanpro_admin_passkey') || 'ADMIN-2026';
+    let savedStudent = localStorage.getItem('khanpro_student_passkey');
+    if (!savedStudent || savedStudent === 'STUDENT-2026') {
+      savedStudent = 'Rafay5@74';
+      localStorage.setItem('khanpro_student_passkey', savedStudent);
+    }
+    this.studentPasskey = savedStudent;
+
+    let savedAdmin = localStorage.getItem('khanpro_admin_passkey');
+    if (!savedAdmin || savedAdmin === 'ADMIN-2026') {
+      savedAdmin = 'Shahid5@74';
+      localStorage.setItem('khanpro_admin_passkey', savedAdmin);
+    }
+    this.adminPasskey = savedAdmin;
     this.currentRole = sessionStorage.getItem('khanpro_role') || 'none'; // 'none' | 'student' | 'admin'
   }
 
@@ -239,6 +250,25 @@ function initPermissionGates() {
       if (newStudent && newAdmin) {
         state.updatePasskeys(newStudent, newAdmin);
       }
+    });
+  }
+
+  // Eye toggles for settings passkeys
+  const btnToggleStudentKey = document.getElementById('btn-toggle-student-key');
+  if (btnToggleStudentKey && settingStudentKey) {
+    btnToggleStudentKey.addEventListener('click', () => {
+      const isPwd = settingStudentKey.type === 'password';
+      settingStudentKey.type = isPwd ? 'text' : 'password';
+      btnToggleStudentKey.innerHTML = isPwd ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+    });
+  }
+
+  const btnToggleAdminKey = document.getElementById('btn-toggle-admin-key');
+  if (btnToggleAdminKey && settingAdminKey) {
+    btnToggleAdminKey.addEventListener('click', () => {
+      const isPwd = settingAdminKey.type === 'password';
+      settingAdminKey.type = isPwd ? 'text' : 'password';
+      btnToggleAdminKey.innerHTML = isPwd ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
     });
   }
 }
