@@ -139,321 +139,221 @@
     <section class="section mail-engine-section" id="student-mail">
       <div class="container">
         <div class="section-header text-center">
-          <div class="section-tag"><i class="fa-solid fa-envelope-open-text"></i> Flagship System</div>
-          <h2 class="section-title">Student Mail Routing Engine</h2>
+          <div class="section-tag"><i class="fa-solid fa-envelope-circle-check"></i> 100% Free Edge Webmail</div>
+          <h2 class="section-title">Private Institutional Mailbox & OTP Receiver</h2>
           <p class="section-subtitle">
-            Instantly assign a <code>@khanpro.me</code> identity. Pick from verified Gmail routing clusters or connect a custom personal inbox.
+            Create your unique <code>@khanpro.me</code> institutional email with your own secure password. 100% Private, Instant OTP detection, and zero Gmail verification hassle!
           </p>
         </div>
 
         <!-- ======================================================== -->
-        <!-- PERMISSION GATE: RESTRICTED ACCESS SCREEN                -->
+        <!-- STATE 1: AUTHENTICATION CONTAINER (REGISTER / LOGIN)     -->
         <!-- ======================================================== -->
-        <div class="permission-gate-card glass-panel" id="mail-permission-gate">
-          <div class="gate-icon-wrap">
-            <i class="fa-solid fa-lock-open-slash" id="gate-lock-icon"></i>
-          </div>
-          <div class="gate-content">
-            <div class="gate-tag"><i class="fa-solid fa-shield-halved"></i> Restricted Campus Service</div>
-            <h3 class="gate-title">Student Mail Infrastructure is Protected</h3>
-            <p class="gate-desc">
-              Public web tools are open to everyone, but the <strong>khanpro.me</strong> email routing engine is private. Enter the Student Passkey or Admin Key issued by the administrator to unlock access.
-            </p>
-
-            <form id="passkey-unlock-form" class="gate-form">
-              <div class="input-addon-group gate-input-wrap">
-                <span class="addon-prefix"><i class="fa-solid fa-key"></i></span>
-                <input type="password" id="gate-passkey-input" class="form-input" placeholder="Enter Access Passkey" required autocomplete="off">
-                <button type="submit" class="btn btn-primary" id="btn-unlock-gate">
-                  <i class="fa-solid fa-unlock"></i> Unlock Access
-                </button>
-              </div>
-              <div class="gate-hint">
-                <span><i class="fa-solid fa-shield-halved"></i> Authorized student access only. Contact administrator for access.</span>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- AUTHORIZED CONTENT CONTAINER (HIDDEN UNTIL UNLOCKED)    -->
-        <!-- ======================================================== -->
-        <div class="authorized-mail-wrapper hidden" id="authorized-mail-area">
-          <div class="session-badge-bar">
-            <div class="session-info">
-              <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> <span id="session-role-text">Student Access Authorized</span></span>
-              <span class="session-tag" id="session-passkey-display">Passkey Active</span>
-            </div>
-            <button class="btn btn-secondary btn-sm" id="btn-lock-session">
-              <i class="fa-solid fa-lock"></i> Lock & Log Out
+        <div class="mailbox-auth-card" id="mail-auth-container">
+          <div class="auth-tabs-nav" role="tablist">
+            <button type="button" class="auth-tab-btn active" id="btn-tab-register" data-auth-tab="register">
+              <i class="fa-solid fa-user-plus"></i> Create New Mailbox
+            </button>
+            <button type="button" class="auth-tab-btn" id="btn-tab-login" data-auth-tab="login">
+              <i class="fa-solid fa-right-to-bracket"></i> Mailbox Login
             </button>
           </div>
 
-          <!-- Tabs Navigation -->
-          <div class="engine-tabs-wrapper">
-            <div class="engine-tabs" role="tablist">
-              <button class="engine-tab-btn active" data-tab="tab-activation" id="tab-btn-activation">
-                <i class="fa-solid fa-user-plus"></i> 1. Self-Activation Portal
+          <!-- TAB 1: REGISTRATION FORM -->
+          <div class="auth-tab-pane" id="pane-register">
+            <form id="form-mailbox-register" class="activation-form">
+              <div class="form-group mb-3">
+                <label class="form-label" for="reg-fullname">
+                  <span class="step-badge">1</span> Full Name
+                </label>
+                <div class="input-addon-group">
+                  <span class="addon-prefix"><i class="fa-solid fa-user"></i></span>
+                  <input type="text" id="reg-fullname" class="form-input" placeholder="e.g. Shahid Ali" required autocomplete="name">
+                </div>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label" for="reg-username">
+                  <span class="step-badge">2</span> Desired Email Address / Roll Number
+                </label>
+                <div class="input-addon-group">
+                  <span class="addon-prefix"><i class="fa-solid fa-at"></i></span>
+                  <input type="text" id="reg-username" class="form-input" placeholder="e.g. bsf1900166 or ali" required autocomplete="username">
+                  <span class="addon-suffix">@khanpro.me</span>
+                </div>
+                <span class="input-hint">Har user ka unique address hoga. (Letters, numbers, dots, hyphens).</span>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label" for="reg-password">
+                  <span class="step-badge">3</span> Set Your Mailbox Password
+                </label>
+                <div class="input-addon-group password-input-wrap">
+                  <span class="addon-prefix"><i class="fa-solid fa-lock"></i></span>
+                  <input type="password" id="reg-password" class="form-input" placeholder="Create strong password (min 6 chars)" required autocomplete="new-password">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-reg-pwd"><i class="fa-solid fa-eye"></i></button>
+                </div>
+              </div>
+
+              <div class="form-group mb-4">
+                <label class="form-label" for="reg-confirm-password">
+                  <span class="step-badge">4</span> Confirm Password
+                </label>
+                <div class="input-addon-group password-input-wrap">
+                  <span class="addon-prefix"><i class="fa-solid fa-shield-check"></i></span>
+                  <input type="password" id="reg-confirm-password" class="form-input" placeholder="Re-enter password" required autocomplete="new-password">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-reg-cpwd"><i class="fa-solid fa-eye"></i></button>
+                </div>
+              </div>
+
+              <div id="reg-alert-box" class="alert hidden mb-3"></div>
+
+              <button type="submit" class="btn btn-primary btn-lg btn-glow w-100" id="btn-submit-register">
+                <i class="fa-solid fa-bolt"></i> Create & Open My Mailbox
               </button>
-              <button class="engine-tab-btn" data-tab="tab-simulator" id="tab-btn-simulator">
-                <i class="fa-solid fa-paper-plane"></i> 2. Live OTP Simulator
-              </button>
-              <button class="engine-tab-btn" data-tab="tab-directory" id="tab-btn-directory">
-                <i class="fa-solid fa-list-check"></i> 3. Active Mappings Directory
-              </button>
-            </div>
+            </form>
           </div>
 
-        <!-- Tab 1: Self-Activation Portal -->
-        <div class="tab-pane active" id="tab-activation">
-          <div class="activation-card glass-panel">
-            <div class="activation-header">
-              <div class="activation-title-area">
-                <h3><i class="fa-solid fa-id-card"></i> Student Email Self-Service Setup</h3>
-                <p>Generate your custom institutional alias in 3 easy steps.</p>
-              </div>
-              <div class="domain-pill">
-                <i class="fa-solid fa-at"></i> @khanpro.me
-              </div>
-            </div>
-
-            <form id="student-activation-form" class="activation-form">
-              <!-- Step 1: Roll Number -->
-              <div class="form-group">
-                <label for="student-prefix" class="form-label">
-                  <span class="step-badge">1</span> Enter Roll Number or Custom Alias
+          <!-- TAB 2: LOGIN FORM -->
+          <div class="auth-tab-pane hidden" id="pane-login">
+            <form id="form-mailbox-login" class="activation-form">
+              <div class="form-group mb-3">
+                <label class="form-label" for="login-email">
+                  <i class="fa-solid fa-envelope"></i> Your @khanpro.me Email or Username
                 </label>
                 <div class="input-addon-group">
                   <span class="addon-prefix"><i class="fa-solid fa-user-graduate"></i></span>
-                  <input type="text" id="student-prefix" class="form-input" placeholder="e.g. bsf1900166 or ali.khan" required autocomplete="off">
-                  <span class="addon-suffix">@khanpro.me</span>
+                  <input type="text" id="login-email" class="form-input" placeholder="e.g. ali or bsf1900166@khanpro.me" required autocomplete="username">
                 </div>
-                <span class="input-hint">No spaces or special symbols. Letters, numbers, dots, and hyphens only.</span>
               </div>
 
-              <!-- Step 2: Choose Gmail Strategy -->
-              <div class="form-group">
-                <label class="form-label">
-                  <span class="step-badge">2</span> Select Where Codes & Emails Should Be Delivered
+              <div class="form-group mb-4">
+                <label class="form-label" for="login-password">
+                  <i class="fa-solid fa-key"></i> Mailbox Password
                 </label>
-                
-                <div class="gmail-strategy-selector">
-                  <label class="strategy-option active" id="strategy-label-cluster">
-                    <input type="radio" name="gmail-mode" value="cluster" checked>
-                    <div class="strategy-content">
-                      <div class="strategy-icon"><i class="fa-solid fa-server"></i></div>
-                      <div class="strategy-meta">
-                        <span class="strategy-title">Pick a Verified Cluster Gmail</span>
-                        <span class="strategy-desc">Zero verification delay. Instantly active.</span>
-                      </div>
-                    </div>
-                  </label>
-
-                  <label class="strategy-option" id="strategy-label-custom">
-                    <input type="radio" name="gmail-mode" value="custom">
-                    <div class="strategy-content">
-                      <div class="strategy-icon"><i class="fa-solid fa-inbox"></i></div>
-                      <div class="strategy-meta">
-                        <span class="strategy-title">Use My Own Personal Gmail</span>
-                        <span class="strategy-desc">Requires 1-time Cloudflare verification link.</span>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-
-                <!-- Dropdown for Cluster Gmails -->
-                <div class="cluster-dropdown-wrapper" id="cluster-dropdown-block">
-                  <label for="cluster-gmail-select" class="sub-label">Choose Active Cluster Address:</label>
-                  <div class="select-wrapper">
-                    <select id="cluster-gmail-select" class="form-select">
-                      <!-- Populated via JS -->
-                    </select>
-                    <i class="fa-solid fa-chevron-down select-chevron"></i>
-                  </div>
-                  <div class="cluster-capacity-indicator" id="cluster-capacity-info">
-                    <span class="indicator-bar"><span class="bar-fill" style="width: 35%"></span></span>
-                    <span class="indicator-text">Cluster Health: Normal load</span>
-                  </div>
-                </div>
-
-                <!-- Custom Gmail Input -->
-                <div class="custom-gmail-wrapper hidden" id="custom-gmail-block">
-                  <label for="custom-gmail-input" class="sub-label">Enter Your Personal Gmail Address:</label>
-                  <div class="input-addon-group">
-                    <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
-                    <input type="email" id="custom-gmail-input" class="form-input" placeholder="e.g. yourname@gmail.com">
-                    <button type="button" class="btn btn-secondary" id="btn-send-cf-verification">
-                      <i class="fa-solid fa-paper-plane"></i> Send Verification
-                    </button>
-                  </div>
-                  
-                  <div class="verification-notice alert alert-info" id="cf-verification-info">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>Cloudflare will send an automatic 1-click confirmation link to your personal Gmail.</span>
-                  </div>
-
-                  <!-- Live Verification Status Card -->
-                  <div class="cf-status-box hidden" id="cf-status-box">
-                    <div class="cf-status-row">
-                      <span class="cf-status-indicator" id="cf-status-indicator">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Checking...
-                      </span>
-                      <button type="button" class="btn btn-sm btn-secondary" id="btn-check-cf-status">
-                        <i class="fa-solid fa-rotate"></i> Re-check Status
-                      </button>
-                    </div>
-                    <p class="cf-status-text" id="cf-status-text">
-                      Verification email sent! Check your inbox (or spam) and click the Cloudflare link.
-                    </p>
-                  </div>
+                <div class="input-addon-group password-input-wrap">
+                  <span class="addon-prefix"><i class="fa-solid fa-lock"></i></span>
+                  <input type="password" id="login-password" class="form-input" placeholder="Enter your mailbox password" required autocomplete="current-password">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-login-pwd"><i class="fa-solid fa-eye"></i></button>
                 </div>
               </div>
 
-              <!-- Submit Action -->
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-lg btn-glow" id="btn-submit-activation">
-                  <i class="fa-solid fa-check-double"></i> Activate Student Email Now
-                </button>
-              </div>
+              <div id="login-alert-box" class="alert hidden mb-3"></div>
+
+              <button type="submit" class="btn btn-primary btn-lg btn-glow w-100" id="btn-submit-login">
+                <i class="fa-solid fa-right-to-bracket"></i> Open My Mailbox
+              </button>
             </form>
-
-            <!-- Success Notification Modal Card -->
-            <div class="success-card hidden" id="activation-success-card">
-              <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
-              <h3>Email Successfully Activated!</h3>
-              <p>Your institutional email alias is live on Cloudflare Edge.</p>
-              
-              <div class="result-details-box">
-                <div class="result-row">
-                  <span class="result-label">Assigned Student Email:</span>
-                  <div class="result-value-badge">
-                    <span id="result-assigned-email">bsf1900166@khanpro.me</span>
-                    <button class="btn-copy" id="btn-copy-email" title="Copy to clipboard">
-                      <i class="fa-solid fa-copy"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="result-row">
-                  <span class="result-label">Destination Gmail:</span>
-                  <span class="result-destination" id="result-destination-email">batch1-portal@gmail.com</span>
-                </div>
-                <div class="result-row">
-                  <span class="result-label">Status:</span>
-                  <span class="badge badge-success"><i class="fa-solid fa-bolt"></i> Ready for Signups</span>
-                </div>
-              </div>
-
-              <div class="activation-instructions">
-                <h4><i class="fa-solid fa-lightbulb"></i> How to receive verification codes:</h4>
-                <ol>
-                  <li>Go to your desired platform (Canva, Software, Portal, etc.) and enter your <code>@khanpro.me</code> email.</li>
-                  <li>Open the designated Gmail inbox.</li>
-                  <li>Search for <code>to:your_roll_number@khanpro.me</code> in Gmail search to locate your OTP instantly!</li>
-                </ol>
-              </div>
-
-              <div class="success-actions">
-                <button class="btn btn-secondary" id="btn-activate-another">
-                  <i class="fa-solid fa-rotate-left"></i> Activate Another Student
-                </button>
-                <button class="btn btn-primary" id="btn-test-in-simulator">
-                  <i class="fa-solid fa-vial"></i> Test In Simulator
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
-        <!-- Tab 2: Live Simulator -->
-        <div class="tab-pane hidden" id="tab-simulator">
-          <div class="simulator-card glass-panel">
-            <div class="simulator-header">
+        <!-- ======================================================== -->
+        <!-- STATE 2: LOGGED-IN PRIVATE WEBMAIL DASHBOARD (INBOX)      -->
+        <!-- ======================================================== -->
+        <div class="mailbox-dashboard-wrapper hidden" id="mailbox-dashboard">
+          
+          <!-- Top User Bar -->
+          <div class="dashboard-user-bar">
+            <div class="dashboard-user-info">
+              <div class="user-avatar-circle" id="user-avatar-badge">K</div>
               <div>
-                <h3><i class="fa-solid fa-network-wired"></i> Live OTP & Email Forwarding Simulator</h3>
-                <p>Simulate sending a verification code to any student email and trace the edge routing pipe.</p>
+                <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">
+                  Welcome, <span id="user-display-name">Student</span>!
+                </div>
+                <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span class="user-email-chip" id="user-display-email">user@khanpro.me</span>
+                  <button class="btn btn-secondary btn-sm" id="btn-copy-my-email" title="Copy email address">
+                    <i class="fa-solid fa-copy"></i> Copy
+                  </button>
+                  <span class="badge badge-success"><i class="fa-solid fa-circle-dot fa-beat-fade"></i> Active Edge Receiver</span>
+                </div>
               </div>
             </div>
 
-            <div class="simulator-grid">
-              <div class="simulator-sender-col">
-                <div class="form-group">
-                  <label class="form-label">Simulated Sender:</label>
-                  <input type="text" id="sim-sender" class="form-input" value="service-security@instagram.com" readonly>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Send To Student Email:</label>
-                  <select id="sim-target-select" class="form-select">
-                    <!-- Populated dynamically -->
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Simulated Subject / Message:</label>
-                  <input type="text" id="sim-subject" class="form-input" value="Your Security Verification Code: 482910">
-                </div>
-                <button class="btn btn-primary w-100" id="btn-run-simulation">
-                  <i class="fa-solid fa-paper-plane"></i> Send Test Verification OTP
-                </button>
-              </div>
+            <div class="dashboard-actions">
+              <button class="btn btn-secondary btn-sm" id="btn-refresh-inbox">
+                <i class="fa-solid fa-rotate" id="refresh-icon"></i> Check New Mails
+              </button>
+              <button class="btn btn-glass btn-sm" id="btn-send-sim-otp" title="Simulate incoming OTP for testing">
+                <i class="fa-solid fa-vial"></i> Send Test OTP
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-user-logout" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+                <i class="fa-solid fa-power-off"></i> Log Out
+              </button>
+            </div>
+          </div>
 
-              <div class="simulator-trace-col">
-                <div class="trace-header">
-                  <span><i class="fa-solid fa-terminal"></i> Edge Pipeline Execution Log</span>
-                  <span class="trace-status" id="trace-status-badge">Idle</span>
-                </div>
-                <div class="trace-terminal" id="sim-trace-terminal">
-                  <div class="terminal-line text-muted">[SYSTEM] Cloudflare Email Routing Engine Initialized.</div>
-                  <div class="terminal-line text-muted">[DNS] MX Records verified for khanpro.me.</div>
-                  <div class="terminal-line text-muted">[READY] Select a student email and click "Send Test Verification OTP".</div>
-                </div>
+          <!-- Main Inbox Container -->
+          <div class="inbox-container">
+            <div class="inbox-toolbar">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0;">
+                  <i class="fa-solid fa-inbox text-primary"></i> Received Emails & OTPs
+                </h3>
+                <span class="badge badge-primary" id="inbox-count-badge">0 Mails</span>
               </div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                Live Polling Active (Auto-updates every 8s)
+              </div>
+            </div>
+
+            <!-- Email List -->
+            <div class="inbox-list" id="inbox-email-list">
+              <!-- Dynamically populated via JS -->
             </div>
           </div>
         </div>
 
-        <!-- Tab 3: Active Mappings Directory -->
-        <div class="tab-pane hidden" id="tab-directory">
-          <div class="directory-card glass-panel">
-            <div class="directory-toolbar">
-              <div class="search-input-wrap">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="directory-search" class="form-input" placeholder="Search by roll number, alias, or Gmail...">
-              </div>
-              <div class="directory-actions">
-                <button class="btn btn-secondary btn-sm" id="btn-export-csv">
-                  <i class="fa-solid fa-file-csv"></i> Export CSV
-                </button>
-                <button class="btn btn-secondary btn-sm" id="btn-refresh-directory">
-                  <i class="fa-solid fa-rotate"></i> Refresh
-                </button>
-              </div>
-            </div>
+      </div>
+    </section>
 
-            <div class="table-responsive">
-              <table class="data-table" id="directory-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Student Alias</th>
-                    <th>Assigned Gmail Cluster</th>
-                    <th>Date Activated</th>
-                    <th>Routing Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="directory-table-body">
-                  <!-- Populated via JS -->
-                </tbody>
-              </table>
-            </div>
-
-            <div class="directory-footer">
-              <span id="directory-count-label">Showing active student mappings</span>
+    <!-- Email Reader Modal -->
+    <div class="email-modal-overlay hidden" id="email-reader-modal">
+      <div class="email-modal-content">
+        <div class="email-modal-header">
+          <div>
+            <h3 id="modal-email-subject" style="font-size: 1.2rem; color: #fff; margin-bottom: 6px;">Email Subject</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+              From: <span id="modal-email-from" style="color: #38bdf8; font-family: var(--font-mono);"></span> | 
+              Date: <span id="modal-email-date" style="color: #cbd5e1;"></span>
             </div>
           </div>
+          <button class="btn-close-modal" id="btn-close-email-modal" style="background: transparent; border: none; color: #fff; font-size: 1.4rem; cursor: pointer;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="email-modal-body">
+          <div id="modal-otp-banner" class="hidden mb-3" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 14px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 0.85rem; color: #fbbf24; text-transform: uppercase; font-weight: 700;">Verification Code / OTP:</span>
+              <div id="modal-otp-value" style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); letter-spacing: 3px; color: #fff;"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btn-modal-copy-otp">
+              <i class="fa-solid fa-copy"></i> Copy Code
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <button class="btn btn-sm btn-secondary active" id="btn-view-rendered">Rendered HTML</button>
+            <button class="btn btn-sm btn-secondary" id="btn-view-text">Plain Text</button>
+          </div>
+
+          <div id="modal-body-rendered" class="email-body-rendered"></div>
+          <pre id="modal-body-text" class="hidden" style="background: #0f172a; padding: 16px; border-radius: 8px; color: #94a3b8; font-family: var(--font-mono); font-size: 0.85rem; white-space: pre-wrap; word-break: break-word;"></pre>
+        </div>
+
+        <div class="email-modal-footer">
+          <button class="btn btn-secondary btn-sm" id="btn-modal-delete-email" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4);">
+            <i class="fa-solid fa-trash"></i> Delete Message
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-modal-close-bottom">
+            Close
+          </button>
         </div>
       </div>
     </div>
-  </section>
 
     <!-- ======================================================== -->
     <!-- SECTION 3: CLUSTER & ADMIN CONTROL PANEL                 -->
