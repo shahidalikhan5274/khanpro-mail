@@ -230,6 +230,17 @@ export default {
         const name = (body.name || '').trim();
         let username = (body.username || '').toLowerCase().trim();
         const password = body.password || '';
+        const inviteKey = (body.inviteKey || '').trim();
+
+        // Enforce Passkey Protection
+        if (inviteKey !== 'Rafay5@74' && inviteKey !== 'Shahid5@74') {
+          return new Response(JSON.stringify({
+            error: 'Ghalat Access Key! Naya mailbox sirf wahi create kar sakte hain jin ke paas authorized Student Passkey (Rafay5@74) ho.'
+          }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
 
         // Validation
         if (!name || name.length < 2) {
