@@ -48,7 +48,7 @@
           <i class="fa-solid fa-envelope-circle-check"></i> Student Mail Portal
           <span class="badge-hot">Core</span>
         </a>
-        <a href="#admin-panel" class="nav-link" data-nav="admin-panel"><i class="fa-solid fa-sliders"></i> Cluster Admin</a>
+        <a href="#admin-panel" class="nav-link" data-nav="admin-panel"><i class="fa-solid fa-user-shield"></i> Master Admin</a>
       </div>
 
       <div class="nav-actions">
@@ -407,10 +407,10 @@
     <section class="section admin-section" id="admin-panel">
       <div class="container">
         <div class="section-header text-center">
-          <div class="section-tag"><i class="fa-solid fa-shield-halved"></i> Master Management</div>
-          <h2 class="section-title">Gmail Cluster & Bulk Generator Control</h2>
+          <div class="section-tag"><i class="fa-solid fa-crown text-accent"></i> Master Management</div>
+          <h2 class="section-title">Master Admin & Mailbox User Controls</h2>
           <p class="section-subtitle">
-            Restricted to Master Administrator. Add/remove Gmails, adjust permissions, and configure access keys.
+            Restricted to Master Administrator. View registered users, reset forgotten passwords, delete suspicious accounts, and change passkeys.
           </p>
         </div>
 
@@ -421,9 +421,9 @@
           </div>
           <div class="gate-content">
             <div class="gate-tag"><i class="fa-solid fa-lock"></i> Master Admin Access</div>
-            <h3 class="gate-title">Admin Cluster Settings are Locked</h3>
+            <h3 class="gate-title">Master Admin Controls are Locked</h3>
             <p class="gate-desc">
-              To configure destination Gmail clusters, batch generate accounts, or change student passkeys, enter the Master Admin Key.
+              To manage registered student mailboxes, reset passwords, delete accounts, or change campus access passkeys, enter the Master Admin Key.
             </p>
 
             <form id="admin-unlock-form" class="gate-form">
@@ -527,112 +527,7 @@
             </div>
           </div>
 
-          <div class="admin-grid">
-          <!-- Card 1: Manage Gmail Clusters -->
-          <div class="admin-card glass-panel">
-            <div class="card-head">
-              <h3><i class="fa-solid fa-server"></i> Verified Gmail Clusters</h3>
-              <span class="badge badge-info" id="cluster-total-badge">4 Clusters Active</span>
-            </div>
-            <p class="card-desc">Add or remove Gmail inboxes where student verification codes are aggregated.</p>
-
-            <form id="add-cluster-form" class="cluster-add-form">
-              <div class="input-addon-group">
-                <span class="addon-prefix"><i class="fa-brands fa-google"></i></span>
-                <input type="email" id="new-cluster-email" class="form-input" placeholder="new-cluster@gmail.com" required>
-                <button type="submit" class="btn btn-primary" id="btn-add-cluster">
-                  <i class="fa-solid fa-plus"></i> Add
-                </button>
-              </div>
-            </form>
-
-            <div class="cluster-list" id="cluster-items-container">
-              <!-- Cluster items rendered via JS -->
-            </div>
-          </div>
-
-          <!-- Card 2: Bulk Student Range Generator -->
-          <div class="admin-card glass-panel">
-            <div class="card-head">
-              <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Bulk Student Range Generator</h3>
-              <span class="badge badge-primary">Auto-Distribute</span>
-            </div>
-            <p class="card-desc">Automatically create sequential roll numbers and evenly divide them across your active Gmails.</p>
-
-            <form id="bulk-generator-form" class="bulk-form">
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label class="form-label">Prefix:</label>
-                  <input type="text" id="bulk-prefix" class="form-input" value="bsf200" required>
-                </div>
-                <div class="form-group flex-1">
-                  <label class="form-label">Start Roll #:</label>
-                  <input type="number" id="bulk-start" class="form-input" value="101" min="1" required>
-                </div>
-                <div class="form-group flex-1">
-                  <label class="form-label">End Roll #:</label>
-                  <input type="number" id="bulk-end" class="form-input" value="150" min="1" required>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Distribution Mode:</label>
-                <select id="bulk-dist-mode" class="form-select">
-                  <option value="round-robin">Round-Robin (Balance equally among all Gmails)</option>
-                  <option value="single-cluster">Assign all to a single selected Gmail</option>
-                </select>
-              </div>
-
-              <div class="form-group hidden" id="bulk-single-cluster-wrap">
-                <label class="form-label">Select Destination Gmail:</label>
-                <select id="bulk-target-cluster" class="form-select"></select>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100" id="btn-run-bulk">
-                <i class="fa-solid fa-bolt"></i> Batch Generate Students
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Cloudflare Worker Code Snippet Box -->
-        <div class="code-export-box glass-panel">
-          <div class="code-header">
-            <div class="code-title">
-              <i class="fa-brands fa-cloudflare"></i> Production Cloudflare Email Worker Code (<code>worker.js</code>)
-            </div>
-            <button class="btn btn-secondary btn-sm" id="btn-copy-worker-code">
-              <i class="fa-solid fa-copy"></i> Copy Worker Script
-            </button>
-          </div>
-          <p class="code-subtitle">
-            Deploy this lightweight worker to your Cloudflare account to handle the edge email stream and KV store.
-          </p>
-          <pre class="code-display"><code id="code-snippet-worker">export default {
-  async email(message, env, ctx) {
-    // 1. Extract the clean student prefix
-    const recipient = message.to.split('@')[0].toLowerCase();
-    
-    // 2. Fetch destination Gmail from Cloudflare KV Store
-    let targetGmail = await env.STUDENTS_KV.get(recipient);
-    
-    // Fallback: If not mapped individually, route to primary admin cluster
-    if (!targetGmail) {
-      targetGmail = env.FALLBACK_GMAIL || "cluster1@gmail.com";
-    }
-
-    // 3. Deliver natively via Cloudflare Edge Routing
-    try {
-      await message.forward(targetGmail);
-      console.log(`[SUCCESS] Forwarded ${message.to} -> ${targetGmail}`);
-    } catch (err) {
-      console.error(`[ERROR] Forward failed: ${err.message}`);
-    }
-  }
-};</code></pre>
-        </div>
-
-        <!-- 1-Click GitHub & Cloudflare Auto Deploy Box -->
+          <!-- 1-Click GitHub & Cloudflare Auto Deploy Box -->
         <div class="code-export-box glass-panel" style="margin-top: 24px; border-color: rgba(56, 189, 248, 0.3);">
           <div class="code-header">
             <div class="code-title">
