@@ -1369,28 +1369,27 @@
                   <div class="yt-section-legend">Data source</div>
                   <div class="yt-radio-group">
                     <label class="yt-radio-label">
-                      <input type="radio" name="yt-data-source" value="api" checked id="yt-src-api">
-                      <span>YouTube Data API — subscriber filters</span>
+                      <input type="radio" name="yt-data-source" value="noapi" checked id="yt-src-noapi">
+                      <span>Direct Web Engine — Free & Unlimited (No API Key Required)</span>
                     </label>
                     <label class="yt-radio-label">
-                      <input type="radio" name="yt-data-source" value="noapi" id="yt-src-noapi">
-                      <span>Bina API (yt-dlp) — tez, key ki zaroorat nahi</span>
+                      <input type="radio" name="yt-data-source" value="api" id="yt-src-api">
+                      <span>YouTube Data API v3 (Optional — Agar apni key ho)</span>
                     </label>
                   </div>
                 </div>
 
-                <!-- 2. API keys -->
-                <div class="yt-section-frame" id="yt-api-keys-section">
-                  <div class="yt-section-legend">API keys (priority: upar &rarr; neeche)</div>
-                  <p class="yt-subtext-gray">Har line par ek key. Pehli khatam / quota &rarr; agli. Phir se pehli try hoti hai.</p>
-                  <textarea id="yt-api-keys-textarea" rows="4" class="yt-code-textarea" spellcheck="false">AIzaSyC-6ZoLhcztyWP3AEYPD19xfV6n0CLZu1M</textarea>
+                <!-- 2. API keys (Optional) -->
+                <div class="yt-section-frame" id="yt-api-keys-section" style="display: none;">
+                  <div class="yt-section-legend">API keys (Optional)</div>
+                  <p class="yt-subtext-gray">Har line par ek Google Data API key. Khali chhor sakte hain — Direct Web Search bila API key ke bilkul sahi chalta hai.</p>
+                  <textarea id="yt-api-keys-textarea" rows="3" class="yt-code-textarea" spellcheck="false" placeholder="(Optional) Google Cloud YouTube Data API v3 key yahan paste karein..."></textarea>
                   <div class="yt-keys-btn-row">
                     <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-save-keys">Save locally</button>
                     <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-clear-keys">Clear saved</button>
                     <button type="button" class="btn btn-secondary btn-xs" id="btn-yt-refresh-quota">Refresh quota</button>
                   </div>
-                  <div class="yt-config-path-label" id="yt-config-path-text">C:\Users\Shahid\.yt_crowler\config.json</div>
-                  <div class="yt-quota-hint-label" id="yt-quota-hint-text">Quota (estimate aaj): Key 1: ~0/10000 units (0%)</div>
+                  <div class="yt-quota-hint-label" id="yt-quota-hint-text">Cloud Engine Active · Free searches ready</div>
                 </div>
 
                 <!-- 3. Search type -->
