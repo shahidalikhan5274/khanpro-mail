@@ -2341,6 +2341,7 @@ function initWebmailSystem() {
   // Password eye toggles
   setupEyeToggle('btn-toggle-reg-pwd', 'reg-password');
   setupEyeToggle('btn-toggle-reg-cpwd', 'reg-confirm-password');
+  setupEyeToggle('btn-toggle-reg-key', 'reg-invite-key');
   setupEyeToggle('btn-toggle-login-pwd', 'login-password');
 
   // Registration Form
@@ -2355,6 +2356,12 @@ function initWebmailSystem() {
       const username = document.getElementById('reg-username').value.trim();
       const password = document.getElementById('reg-password').value;
       const confirmPassword = document.getElementById('reg-confirm-password').value;
+      const inviteKey = document.getElementById('reg-invite-key') ? document.getElementById('reg-invite-key').value.trim() : '';
+
+      if (!inviteKey) {
+        showFormAlert(regAlert, 'Campus Access Passkey darj karna lazmi hai!', 'error');
+        return;
+      }
 
       if (password !== confirmPassword) {
         showFormAlert(regAlert, 'Dono passwords match nahi kar rahe. Dobara check karein!', 'error');
@@ -2374,7 +2381,7 @@ function initWebmailSystem() {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, username, password })
+          body: JSON.stringify({ name, username, password, inviteKey })
         });
         const data = await res.json();
 
