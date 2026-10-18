@@ -195,7 +195,7 @@
                 </div>
               </div>
 
-              <div class="form-group mb-4">
+              <div class="form-group mb-3">
                 <label class="form-label" for="reg-confirm-password">
                   <span class="step-badge">4</span> Confirm Password
                 </label>
@@ -204,6 +204,18 @@
                   <input type="password" id="reg-confirm-password" class="form-input" placeholder="Re-enter password" required autocomplete="new-password">
                   <button type="button" class="btn-toggle-eye" id="btn-toggle-reg-cpwd"><i class="fa-solid fa-eye"></i></button>
                 </div>
+              </div>
+
+              <div class="form-group mb-4">
+                <label class="form-label" for="reg-invite-key">
+                  <span class="step-badge" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff;"><i class="fa-solid fa-key"></i></span> Campus Access Passkey (Issued by Admin)
+                </label>
+                <div class="input-addon-group password-input-wrap">
+                  <span class="addon-prefix"><i class="fa-solid fa-shield-halved"></i></span>
+                  <input type="password" id="reg-invite-key" class="form-input" placeholder="Enter Campus Passkey" required autocomplete="off">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-reg-key"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <span class="input-hint" style="color: #fbbf24;"><i class="fa-solid fa-lock"></i> Protected: Naya mailbox sirf wahi create kar sakte hain jin ke paas authorized Student Passkey ho.</span>
               </div>
 
               <div id="reg-alert-box" class="alert hidden mb-3"></div>
