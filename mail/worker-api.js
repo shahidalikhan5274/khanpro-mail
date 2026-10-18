@@ -733,8 +733,277 @@ Team KhanPro`;
       }
     }
 
+    // -------------------------------------------------------------
+    // POST /api/yt-search - YouTube Channel Search (Dual: API + Scraper)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/yt-search' && request.method === 'POST') {
+      try {
+        const data = await request.json();
+        const mode = data.mode || 'api';
+        const searchHow = data.search_how || 'name';
+        const keyword = (data.keyword || '').trim();
+        const categoryLabel = (data.category_label || '').trim();
+        const keys = Array.isArray(data.keys) ? data.keys.filter(Boolean) : [];
+        const maxResults = Math.min(parseInt(data.max_results) || 50, 150);
+        const minSubs = parseInt(data.min_subs) || 0;
+        const maxSubs = parseInt(data.max_subs) || 0;
+        const minVideos = parseInt(data.min_videos) || 0;
+        const countryCode = (data.country_code || '').trim().toUpperCase();
+
+        const q = searchHow === 'category' ? categoryLabel : keyword;
+        if (!q) {
+          return new Response(JSON.stringify({ error: 'Keyword ya category likhna zaroori hai.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        let channels = [];
+
+        // 1. Try official API key if valid
+        if (mode === 'api' && keys.length > 0) {
+          for (const key of keys) {
+            try {
+              const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(q)}&maxResults=${Math.min(maxResults, 50)}&key=${key}`;
+              const sRes = await fetch(searchUrl);
+              const sData = await sRes.json();
+
+              if (sData.error) {
+                console.warn(`[YT API] Key error: ${sData.error.message}, falling back...`);
+                continue;
+              }
+
+              const channelIds = (sData.items || []).map(it => it.snippet?.channelId || it.id?.channelId).filter(Boolean);
+              if (channelIds.length) {
+                const detailsUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelIds.join(',')}&key=${key}`;
+                const dRes = await fetch(detailsUrl);
+                const dData = await dRes.json();
+                channels = (dData.items || []).map(ch => {
+                  const snip = ch.snippet || {};
+                  const stat = ch.statistics || {};
+                  const subs = stat.hiddenSubscriberCount ? null : parseInt(stat.subscriberCount || '0');
+                  const vids = parseInt(stat.videoCount || '0');
+                  const country = snip.country || '';
+                  const uname = snip.customUrl ? (snip.customUrl.startsWith('@') ? snip.customUrl : '@' + snip.customUrl) : '';
+                  return {
+                    id: ch.id,
+                    name: snip.title || '',
+                    username: uname,
+                    country: country,
+                    subscribers: subs,
+                    videos: vids,
+                    url: `https://www.youtube.com/channel/${ch.id}`
+                  };
+                });
+                break;
+              }
+            } catch (apiErr) {
+              console.warn('[YT API]:', apiErr);
+            }
+          }
+        }
+
+        // 2. Direct Scraper Fallback (No-API mode or fallback)
+        if (!channels || channels.length === 0) {
+          try {
+            const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}&sp=EgIQAg%253D%253D`;
+            const ytRes = await fetch(ytUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cookie': 'SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg'
+              }
+            });
+            const html = await ytRes.text();
+            const match = html.match(/var ytInitialData\s*=\s*({.+?});<\/script>/);
+
+            if (match) {
+              const parsed = JSON.parse(match[1]);
+              const contents = parsed?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
+              if (Array.isArray(contents)) {
+                const getTxt = (obj) => {
+                  if (!obj) return '';
+                  if (obj.simpleText) return obj.simpleText;
+                  if (Array.isArray(obj.runs)) return obj.runs.map(r => r.text).join('');
+                  if (obj.accessibility?.accessibilityData?.label) return obj.accessibility.accessibilityData.label;
+                  return '';
+                };
+
+                for (const section of contents) {
+                  const items = section?.itemSectionRenderer?.contents;
+                  if (!Array.isArray(items)) continue;
+                  for (const it of items) {
+                    const cr = it?.channelRenderer;
+                    if (!cr) continue;
+                    const cid = cr.channelId;
+                    const title = cr.title?.simpleText || (cr.title?.runs ? cr.title.runs.map(r => r.text).join('') : '') || '';
+                    let handle = cr.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl || '';
+
+                    const t1 = getTxt(cr.subscriberCountText);
+                    const t2 = getTxt(cr.videoCountText);
+
+                    let subsText = '';
+                    let vidsText = '';
+
+                    [t1, t2].forEach(t => {
+                      if (!t) return;
+                      const low = t.toLowerCase();
+                      if (low.includes('subscriber')) {
+                        subsText = t;
+                      } else if (low.includes('video')) {
+                        vidsText = t;
+                      } else if (t.startsWith('@') && !handle) {
+                        handle = t;
+                      }
+                    });
+
+                    if (handle) {
+                      handle = '@' + handle.replace(/^[\/@]+/, '');
+                    }
+
+                    channels.push({
+                      id: cid,
+                      name: title,
+                      username: handle || '',
+                      country: '',
+                      subscribers: parseSubCount(subsText),
+                      videos: parseVidCount(vidsText),
+                      url: `https://www.youtube.com/channel/${cid}`
+                    });
+                    if (channels.length >= maxResults) break;
+                  }
+                  if (channels.length >= maxResults) break;
+                }
+              }
+            }
+          } catch (scrapeErr) {
+            console.error('[YT Scrape Error]:', scrapeErr);
+          }
+        }
+
+        // Apply filters
+        channels = channels.filter(c => {
+          if (minSubs > 0 && (c.subscribers === null || c.subscribers < minSubs)) return false;
+          if (maxSubs > 0 && c.subscribers !== null && c.subscribers > maxSubs) return false;
+          if (minVideos > 0 && c.videos < minVideos) return false;
+          if (countryCode && c.country && c.country.toUpperCase() !== countryCode) return false;
+          return true;
+        });
+
+        return new Response(JSON.stringify({
+          success: true,
+          channels,
+          count: channels.length,
+          query: q
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Search failed: ' + err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // POST /api/yt-crawl or /api/yt-video-crawl - Video Crawler
+    // -------------------------------------------------------------
+    if ((url.pathname === '/api/yt-crawl' || url.pathname === '/api/yt-video-crawl') && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const rawUrl = (body.url || '').trim();
+
+        if (!rawUrl) {
+          return new Response(JSON.stringify({ error: 'YouTube URL required.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = rawUrl.match(regExp);
+        let videoId = (match && match[2].length === 11) ? match[2] : null;
+
+        if (!videoId) {
+          const shortsMatch = rawUrl.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+          if (shortsMatch) videoId = shortsMatch[1];
+        }
+
+        if (!videoId) {
+          return new Response(JSON.stringify({ error: 'Valid YouTube video ID nahi mila.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        let title = 'YouTube Video';
+        let authorName = 'YouTube Creator';
+        let authorUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+        try {
+          const oembedRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+          if (oembedRes.ok) {
+            const oData = await oembedRes.json();
+            if (oData.title) title = oData.title;
+            if (oData.author_name) authorName = oData.author_name;
+            if (oData.author_url) authorUrl = oData.author_url;
+          }
+        } catch (e) {}
+
+        const cleanData = {
+          title,
+          id: videoId,
+          channel: authorName,
+          channel_url: authorUrl,
+          thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+          url: `https://www.youtube.com/watch?v=${videoId}`
+        };
+
+        return new Response(JSON.stringify({
+          success: true,
+          videos: [cleanData],
+          data: cleanData,
+          count: 1
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Crawl error: ' + err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     return new Response("KhanPro Multi-User Mailbox API Engine Active", {
       headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
     });
   }
 };
+
+function parseSubCount(str) {
+  if (!str) return null;
+  const m = str.match(/([\d.]+)\s*([KMBkmb]|million|thousand|billion)?/i);
+  if (!m) return null;
+  let val = parseFloat(m[1]);
+  const unit = (m[2] || '').toUpperCase();
+  if (unit === 'K' || unit.startsWith('THOUSAND')) val *= 1000;
+  else if (unit === 'M' || unit.startsWith('MILLION')) val *= 1000000;
+  else if (unit === 'B' || unit.startsWith('BILLION')) val *= 1000000000;
+  return Math.round(val);
+}
+
+function parseVidCount(str) {
+  if (!str) return 0;
+  const m = str.match(/([\d,.]+)\s*([KMBkmb]|million|thousand|billion)?/i);
+  if (!m) return 0;
+  let val = parseFloat(m[1].replace(/,/g, ''));
+  const unit = (m[2] || '').toUpperCase();
+  if (unit === 'K' || unit.startsWith('THOUSAND')) val *= 1000;
+  else if (unit === 'M' || unit.startsWith('MILLION')) val *= 1000000;
+  else if (unit === 'B' || unit.startsWith('BILLION')) val *= 1000000000;
+  return Math.round(val);
+}
