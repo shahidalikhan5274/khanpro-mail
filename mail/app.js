@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initPermissionGates();
   initTabs();
-  initActivationForm();
+  initWebmailSystem();
   initAdminControls();
   initSimulator();
   initDirectory();
@@ -2309,3 +2309,511 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
+// ===================================================================
+// MULTI-USER PRIVATE WEBMAIL SYSTEM & D1 INBOX LOGIC
+// ===================================================================
+let webmailPollInterval = null;
+
+function initWebmailSystem() {
+  const btnTabRegister = document.getElementById('btn-tab-register');
+  const btnTabLogin = document.getElementById('btn-tab-login');
+  const paneRegister = document.getElementById('pane-register');
+  const paneLogin = document.getElementById('pane-login');
+
+  if (btnTabRegister && btnTabLogin) {
+    btnTabRegister.addEventListener('click', () => {
+      btnTabRegister.classList.add('active');
+      btnTabLogin.classList.remove('active');
+      paneRegister.classList.remove('hidden');
+      paneLogin.classList.add('hidden');
+    });
+
+    btnTabLogin.addEventListener('click', () => {
+      btnTabLogin.classList.add('active');
+      btnTabRegister.classList.remove('active');
+      paneLogin.classList.remove('hidden');
+      paneRegister.classList.add('hidden');
+    });
+  }
+
+  // Password eye toggles
+  setupEyeToggle('btn-toggle-reg-pwd', 'reg-password');
+  setupEyeToggle('btn-toggle-reg-cpwd', 'reg-confirm-password');
+  setupEyeToggle('btn-toggle-login-pwd', 'login-password');
+
+  // Registration Form
+  const regForm = document.getElementById('form-mailbox-register');
+  const regAlert = document.getElementById('reg-alert-box');
+  const btnRegSubmit = document.getElementById('btn-submit-register');
+
+  if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+      if (password !== confirmPassword) {
+        showFormAlert(regAlert, 'Dono passwords match nahi kar rahe. Dobara check karein!', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showFormAlert(regAlert, 'Password kam az kam 6 characters ka hona chahiye.', 'error');
+        return;
+      }
+
+      btnRegSubmit.disabled = true;
+      btnRegSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mailbox Create Ho Raha Hai...';
+      hideFormAlert(regAlert);
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`Mubarak! ${data.user.email} kamyabi se active ho gaya!`, 'success');
+          localStorage.setItem('khanpro_mailbox_session', JSON.stringify({
+            user: data.user,
+            token: data.token
+          }));
+          renderMailboxDashboard();
+        } else {
+          showFormAlert(regAlert, data.error || 'Registration failed. Try again.', 'error');
+        }
+      } catch (err) {
+        showFormAlert(regAlert, 'Network error: ' + err.message, 'error');
+      } finally {
+        btnRegSubmit.disabled = false;
+        btnRegSubmit.innerHTML = '<i class="fa-solid fa-bolt"></i> Create & Open My Mailbox';
+      }
+    });
+  }
+
+  // Login Form
+  const loginForm = document.getElementById('form-mailbox-login');
+  const loginAlert = document.getElementById('login-alert-box');
+  const btnLoginSubmit = document.getElementById('btn-submit-login');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      btnLoginSubmit.disabled = true;
+      btnLoginSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Login Ho Raha Hai...';
+      hideFormAlert(loginAlert);
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`Welcome back, ${data.user.name}!`, 'success');
+          localStorage.setItem('khanpro_mailbox_session', JSON.stringify({
+            user: data.user,
+            token: data.token
+          }));
+          renderMailboxDashboard();
+        } else {
+          showFormAlert(loginAlert, data.error || 'Login failed. Check details.', 'error');
+        }
+      } catch (err) {
+        showFormAlert(loginAlert, 'Network error: ' + err.message, 'error');
+      } finally {
+        btnLoginSubmit.disabled = false;
+        btnLoginSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Open My Mailbox';
+      }
+    });
+  }
+
+  // Dashboard buttons
+  const btnCopyEmail = document.getElementById('btn-copy-my-email');
+  if (btnCopyEmail) {
+    btnCopyEmail.addEventListener('click', () => {
+      const email = document.getElementById('user-display-email').textContent;
+      navigator.clipboard.writeText(email).then(() => {
+        showToast(`Copied ${email} to clipboard!`, 'success');
+      });
+    });
+  }
+
+  const btnRefresh = document.getElementById('btn-refresh-inbox');
+  if (btnRefresh) {
+    btnRefresh.addEventListener('click', () => {
+      fetchUserInbox(true);
+    });
+  }
+
+  const btnLogout = document.getElementById('btn-user-logout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      localStorage.removeItem('khanpro_mailbox_session');
+      if (webmailPollInterval) clearInterval(webmailPollInterval);
+      showToast('Aapka mailbox session band kar diya gaya hai.', 'info');
+      renderMailboxDashboard();
+    });
+  }
+
+  const btnSendSimOtp = document.getElementById('btn-send-sim-otp');
+  if (btnSendSimOtp) {
+    btnSendSimOtp.addEventListener('click', async () => {
+      const session = getMailboxSession();
+      if (!session) return;
+      btnSendSimOtp.disabled = true;
+      btnSendSimOtp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending OTP...';
+      try {
+        const res = await fetch('/api/inbox/test-sim', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.token}`
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Test OTP sent from ${data.service}! Code: ${data.otp}`, 'success');
+          fetchUserInbox(false);
+        } else {
+          showToast(data.error || 'Sim failed', 'error');
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      } finally {
+        btnSendSimOtp.disabled = false;
+        btnSendSimOtp.innerHTML = '<i class="fa-solid fa-vial"></i> Send Test OTP';
+      }
+    });
+  }
+
+  // Modal events
+  setupEmailModal();
+
+  // Initial check of logged-in session
+  renderMailboxDashboard();
+}
+
+function setupEyeToggle(btnId, inputId) {
+  const btn = document.getElementById(btnId);
+  const input = document.getElementById(inputId);
+  if (btn && input) {
+    btn.addEventListener('click', () => {
+      const isPwd = input.type === 'password';
+      input.type = isPwd ? 'text' : 'password';
+      btn.innerHTML = isPwd ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+    });
+  }
+}
+
+function showFormAlert(el, msg, type) {
+  if (!el) return;
+  el.className = `alert alert-${type === 'error' ? 'danger' : 'success'} mb-3`;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function hideFormAlert(el) {
+  if (el) el.classList.add('hidden');
+}
+
+function getMailboxSession() {
+  try {
+    const raw = localStorage.getItem('khanpro_mailbox_session');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderMailboxDashboard() {
+  const session = getMailboxSession();
+  const authContainer = document.getElementById('mail-auth-container');
+  const dashboard = document.getElementById('mailbox-dashboard');
+
+  if (!authContainer || !dashboard) return;
+
+  if (session && session.user && session.token) {
+    authContainer.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+
+    const nameEl = document.getElementById('user-display-name');
+    const emailEl = document.getElementById('user-display-email');
+    const avatarEl = document.getElementById('user-avatar-badge');
+
+    if (nameEl) nameEl.textContent = session.user.name || 'Student';
+    if (emailEl) emailEl.textContent = session.user.email || 'user@khanpro.me';
+    if (avatarEl) avatarEl.textContent = (session.user.name || 'K').charAt(0).toUpperCase();
+
+    fetchUserInbox(false);
+
+    if (webmailPollInterval) clearInterval(webmailPollInterval);
+    webmailPollInterval = setInterval(() => {
+      fetchUserInbox(false);
+    }, 8000);
+
+  } else {
+    authContainer.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+    if (webmailPollInterval) clearInterval(webmailPollInterval);
+  }
+}
+
+async function fetchUserInbox(isManual) {
+  const session = getMailboxSession();
+  if (!session || !session.token) return;
+
+  const refreshIcon = document.getElementById('refresh-icon');
+  if (isManual && refreshIcon) refreshIcon.classList.add('fa-spin');
+
+  try {
+    const res = await fetch('/api/inbox', {
+      headers: { 'Authorization': `Bearer ${session.token}` }
+    });
+
+    if (res.status === 401) {
+      localStorage.removeItem('khanpro_mailbox_session');
+      renderMailboxDashboard();
+      return;
+    }
+
+    const data = await res.json();
+    if (data.success) {
+      renderInboxList(data.emails || []);
+      if (isManual) showToast('Inbox refreshed!', 'success');
+    }
+  } catch (err) {
+    console.warn('Inbox fetch error:', err);
+  } finally {
+    if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+  }
+}
+
+function renderInboxList(emails) {
+  const listEl = document.getElementById('inbox-email-list');
+  const badgeEl = document.getElementById('inbox-count-badge');
+  if (!listEl) return;
+
+  if (badgeEl) badgeEl.textContent = `${emails.length} ${emails.length === 1 ? 'Mail' : 'Mails'}`;
+
+  if (emails.length === 0) {
+    listEl.innerHTML = `
+      <div style="text-align: center; padding: 48px 20px; background: rgba(7, 9, 14, 0.4); border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.1);">
+        <div style="font-size: 2.5rem; color: #6366f1; margin-bottom: 12px;"><i class="fa-solid fa-inbox"></i></div>
+        <h4 style="font-size: 1.15rem; color: #fff; margin-bottom: 8px;">Aapka Mailbox Khali Hai</h4>
+        <p style="color: #94a3b8; font-size: 0.9rem; max-width: 480px; margin: 0 auto 16px auto;">
+          Abhi tak koi email receive nahi hui. Kisi bhi app/website par apna email daalein, ya ooper diya gaya <strong>"Send Test OTP"</strong> button daba kar test karein!
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = emails.map(email => {
+    const timeFormatted = formatTimeAgo(email.received_at);
+    const unreadClass = email.is_read ? '' : 'unread';
+    const otpMarkup = email.otp_code ? `
+      <div class="email-otp-highlight" onclick="event.stopPropagation();">
+        <i class="fa-solid fa-key" style="color: #fbbf24;"></i>
+        <span style="font-size: 0.75rem; color: #fef3c7; font-weight: 600;">OTP CODE:</span>
+        <span class="otp-code-text">${escapeHtml(email.otp_code)}</span>
+        <button class="btn-copy-otp" onclick="copyOtpText('${escapeHtml(email.otp_code)}')">
+          <i class="fa-solid fa-copy"></i> Copy
+        </button>
+      </div>
+    ` : '';
+
+    return `
+      <div class="inbox-email-card ${unreadClass}" onclick="openEmailModal(${email.id})">
+        <div>
+          ${!email.is_read ? '<span class="unread-dot"></span>' : '<span style="width: 10px; display: inline-block;"></span>'}
+        </div>
+        <div style="min-width: 0;">
+          <div class="email-meta-sender">
+            <span>${escapeHtml(email.sender || 'Unknown Sender')}</span>
+          </div>
+          <div class="email-meta-subject">${escapeHtml(email.subject || '(No Subject)')}</div>
+          <div class="email-meta-snippet">${escapeHtml(email.preview || '')}</div>
+          ${otpMarkup}
+        </div>
+        <div style="text-align: right; white-space: nowrap;">
+          <div class="email-time-badge">${timeFormatted}</div>
+          <button class="btn btn-sm btn-secondary" style="margin-top: 8px; font-size: 0.75rem; padding: 4px 10px;" onclick="event.stopPropagation(); openEmailModal(${email.id});">
+            <i class="fa-solid fa-eye"></i> Read
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyOtpText(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    showToast(`OTP Code '${code}' copied to clipboard!`, 'success');
+  });
+}
+
+function setupEmailModal() {
+  const modal = document.getElementById('email-reader-modal');
+  const btnClose = document.getElementById('btn-close-email-modal');
+  const btnCloseBottom = document.getElementById('btn-modal-close-bottom');
+  const btnDelete = document.getElementById('btn-modal-delete-email');
+  const btnCopyOtp = document.getElementById('btn-modal-copy-otp');
+  const btnRendered = document.getElementById('btn-view-rendered');
+  const btnText = document.getElementById('btn-view-text');
+  const bodyRendered = document.getElementById('modal-body-rendered');
+  const bodyText = document.getElementById('modal-body-text');
+
+  if (!modal) return;
+
+  const closeModal = () => modal.classList.add('hidden');
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  if (btnCloseBottom) btnCloseBottom.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  if (btnRendered && btnText) {
+    btnRendered.addEventListener('click', () => {
+      btnRendered.classList.add('active');
+      btnText.classList.remove('active');
+      bodyRendered.classList.remove('hidden');
+      bodyText.classList.add('hidden');
+    });
+
+    btnText.addEventListener('click', () => {
+      btnText.classList.add('active');
+      btnRendered.classList.remove('active');
+      bodyText.classList.remove('hidden');
+      bodyRendered.classList.add('hidden');
+    });
+  }
+
+  if (btnCopyOtp) {
+    btnCopyOtp.addEventListener('click', () => {
+      const otpVal = document.getElementById('modal-otp-value').textContent;
+      navigator.clipboard.writeText(otpVal).then(() => {
+        showToast(`OTP ${otpVal} copied!`, 'success');
+      });
+    });
+  }
+
+  if (btnDelete) {
+    btnDelete.addEventListener('click', async () => {
+      const emailId = modal.dataset.currentEmailId;
+      if (!emailId) return;
+      if (!confirm('Kya aap yeh email delete karna chahte hain?')) return;
+
+      const session = getMailboxSession();
+      if (!session) return;
+
+      try {
+        const res = await fetch('/api/inbox/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.token}`
+          },
+          body: JSON.stringify({ id: emailId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Email deleted successfully.', 'success');
+          closeModal();
+          fetchUserInbox(false);
+        }
+      } catch (err) {
+        showToast('Delete error: ' + err.message, 'error');
+      }
+    });
+  }
+}
+
+async function openEmailModal(emailId) {
+  const session = getMailboxSession();
+  if (!session) return;
+
+  const modal = document.getElementById('email-reader-modal');
+  if (!modal) return;
+
+  modal.dataset.currentEmailId = emailId;
+  modal.classList.remove('hidden');
+
+  document.getElementById('modal-email-subject').textContent = 'Loading email...';
+  document.getElementById('modal-email-from').textContent = '';
+  document.getElementById('modal-email-date').textContent = '';
+  document.getElementById('modal-body-rendered').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading content...';
+  document.getElementById('modal-body-text').textContent = '';
+  document.getElementById('modal-otp-banner').classList.add('hidden');
+
+  try {
+    const res = await fetch(`/api/inbox/message?id=${emailId}`, {
+      headers: { 'Authorization': `Bearer ${session.token}` }
+    });
+    const data = await res.json();
+
+    if (data.success && data.message) {
+      const msg = data.message;
+      document.getElementById('modal-email-subject').textContent = msg.subject || '(No Subject)';
+      document.getElementById('modal-email-from').textContent = msg.sender || 'Unknown';
+      document.getElementById('modal-email-date').textContent = new Date(msg.received_at).toLocaleString();
+
+      if (msg.otp_code) {
+        document.getElementById('modal-otp-value').textContent = msg.otp_code;
+        document.getElementById('modal-otp-banner').classList.remove('hidden');
+      }
+
+      const bodyHtml = msg.body_html || '';
+      const bodyTxt = msg.body_text || '';
+
+      if (bodyHtml) {
+        document.getElementById('modal-body-rendered').innerHTML = bodyHtml;
+      } else {
+        document.getElementById('modal-body-rendered').innerHTML = `<p style="white-space: pre-wrap;">${escapeHtml(bodyTxt)}</p>`;
+      }
+
+      document.getElementById('modal-body-text').textContent = bodyTxt || bodyHtml;
+      fetchUserInbox(false);
+    }
+  } catch (err) {
+    document.getElementById('modal-body-rendered').innerHTML = `<div class="text-danger">Failed to load email: ${err.message}</div>`;
+  }
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  const now = new Date();
+  const date = new Date(dateStr.endsWith('Z') ? dateStr : dateStr + 'Z');
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (isNaN(seconds) || seconds < 0) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
