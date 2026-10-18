@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initWebmailSystem();
   initAdminControls();
+  initAdminUserManagement();
   initSimulator();
   initDirectory();
   initToolsModals();
@@ -1577,6 +1578,7 @@ function updateUI() {
     if (adminArea) adminArea.classList.remove('hidden');
     if (sessionRoleText) sessionRoleText.textContent = 'Master Admin Authorized';
     if (sessionPasskeyDisplay) sessionPasskeyDisplay.textContent = 'All Engine Controls Unlocked';
+    loadAdminUsers();
   } else if (state.currentRole === 'student') {
     if (mailGate) mailGate.classList.add('hidden');
     if (mailArea) mailArea.classList.remove('hidden');
@@ -2823,4 +2825,211 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+
+// ===================================================================
+// MASTER ADMIN LIVE MAILBOX USERS & ACCESS CONTROL LOGIC
+// ===================================================================
+let cachedAdminUsers = [];
+
+function initAdminUserManagement() {
+  const btnRefresh = document.getElementById('btn-admin-refresh-users');
+  const searchInput = document.getElementById('admin-user-search-input');
+
+  if (btnRefresh) {
+    btnRefresh.addEventListener('click', () => {
+      loadAdminUsers(true);
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = cachedAdminUsers.filter(u => 
+        (u.name || '').toLowerCase().includes(q) || 
+        (u.email || '').toLowerCase().includes(q)
+      );
+      renderAdminUsersTable(filtered);
+    });
+  }
+
+  setupAdminResetPwdModal();
+}
+
+async function loadAdminUsers(isManual) {
+  if (state.currentRole !== 'admin') return;
+
+  const refreshIcon = document.getElementById('admin-refresh-icon');
+  if (isManual && refreshIcon) refreshIcon.classList.add('fa-spin');
+
+  const tbody = document.getElementById('admin-users-table-body');
+  const countBadge = document.getElementById('admin-user-count-badge');
+
+  try {
+    const res = await fetch('/api/admin/users', {
+      headers: { 'X-Admin-Key': state.adminPasskey }
+    });
+    const data = await res.json();
+
+    if (data.success && Array.isArray(data.users)) {
+      cachedAdminUsers = data.users;
+      if (countBadge) countBadge.textContent = `${data.users.length} Users Registered`;
+      renderAdminUsersTable(data.users);
+      if (isManual) showToast('Registered users refreshed!', 'success');
+    } else {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding: 20px;">Could not load users.</td></tr>`;
+    }
+  } catch (err) {
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger" style="padding: 20px;">Error: ${escapeHtml(err.message)}</td></tr>`;
+  } finally {
+    if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+  }
+}
+
+function renderAdminUsersTable(users) {
+  const tbody = document.getElementById('admin-users-table-body');
+  if (!tbody) return;
+
+  if (users.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-muted" style="padding: 32px 16px;">
+          <i class="fa-solid fa-users-slash" style="font-size: 1.8rem; margin-bottom: 8px; display: block; color: #64748b;"></i>
+          Koi user nahi mila.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = users.map(u => {
+    const createdDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A';
+    return `
+      <tr>
+        <td style="font-family: var(--font-mono); font-weight: 700; color: #6366f1;">#${u.id}</td>
+        <td>
+          <div style="font-weight: 600; color: #fff;">${escapeHtml(u.name || 'Student')}</div>
+        </td>
+        <td>
+          <span class="user-email-chip" style="font-size: 0.85rem;">${escapeHtml(u.email)}</span>
+        </td>
+        <td>
+          <span class="badge badge-info" style="font-size: 0.75rem;">${u.email_count || 0} Mails</span>
+        </td>
+        <td style="color: #94a3b8; font-size: 0.85rem;">${createdDate}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-sm btn-secondary" onclick="openResetPasswordModal(${u.id}, '${escapeHtml(u.email)}', '${escapeHtml(u.name || '')}')" title="Reset Password">
+            <i class="fa-solid fa-key"></i> Reset Password
+          </button>
+          <button class="btn btn-sm btn-danger" style="margin-left: 6px; border-color: rgba(239, 68, 68, 0.4); color: #f87171;" onclick="deleteUserMailbox(${u.id}, '${escapeHtml(u.email)}')" title="Delete Account">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function setupAdminResetPwdModal() {
+  const modal = document.getElementById('admin-reset-pwd-modal');
+  const btnClose = document.getElementById('btn-close-reset-pwd');
+  const form = document.getElementById('admin-reset-pwd-form');
+  const alertBox = document.getElementById('reset-pwd-alert');
+  const btnSubmit = document.getElementById('btn-submit-reset-pwd');
+
+  if (!modal) return;
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    if (alertBox) alertBox.classList.add('hidden');
+    if (form) form.reset();
+  };
+
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  setupEyeToggle('btn-toggle-reset-eye', 'reset-pwd-input');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById('reset-pwd-target-id').value;
+      const newPassword = document.getElementById('reset-pwd-input').value;
+
+      if (!newPassword || newPassword.length < 6) {
+        showFormAlert(alertBox, 'Naya password kam az kam 6 characters ka hona chahiye.', 'error');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+      hideFormAlert(alertBox);
+
+      try {
+        const res = await fetch('/api/admin/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            adminKey: state.adminPasskey,
+            userId,
+            newPassword
+          })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(data.message || 'Password successfully updated!', 'success');
+          closeModal();
+        } else {
+          showFormAlert(alertBox, data.error || 'Failed to reset password.', 'error');
+        }
+      } catch (err) {
+        showFormAlert(alertBox, 'Network error: ' + err.message, 'error');
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Password Now';
+      }
+    });
+  }
+}
+
+function openResetPasswordModal(userId, email, name) {
+  const modal = document.getElementById('admin-reset-pwd-modal');
+  if (!modal) return;
+
+  document.getElementById('reset-pwd-target-id').value = userId;
+  document.getElementById('reset-pwd-modal-user-info').textContent = `Target: ${name ? name + ' (' + email + ')' : email}`;
+  document.getElementById('reset-pwd-input').value = '';
+  hideFormAlert(document.getElementById('reset-pwd-alert'));
+
+  modal.classList.remove('hidden');
+}
+
+async function deleteUserMailbox(userId, email) {
+  const confirmed = confirm(`⚠️ KYA AAP WAQAI IS MAILBOX KO DELETE KARNA CHAHTE HAIN?\n\nEmail: ${email}\n\nIs user ka account aur tamam stored emails/OTPs hamesha ke liye delete ho jayengi!`);
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/api/admin/delete-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminKey: state.adminPasskey,
+        userId
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast(data.message || 'User deleted.', 'success');
+      loadAdminUsers(false);
+    } else {
+      showToast(data.error || 'Delete failed.', 'error');
+    }
+  } catch (err) {
+    showToast('Delete error: ' + err.message, 'error');
+  }
 }
