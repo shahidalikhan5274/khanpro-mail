@@ -607,6 +607,132 @@ Team KhanPro`;
       }
     }
 
+    // -------------------------------------------------------------
+    // GET /api/admin/users - List All Registered Mailboxes
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/users' && request.method === 'GET') {
+      try {
+        const adminKey = request.headers.get('X-Admin-Key') || url.searchParams.get('adminKey');
+        if (adminKey !== 'Shahid5@74') {
+          return new Response(JSON.stringify({ error: 'Admin access denied.' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const { results: users } = await env.DB.prepare(
+          `SELECT u.id, u.name, u.email, u.created_at, COUNT(e.id) as email_count 
+           FROM users u 
+           LEFT JOIN emails e ON u.email = e.recipient 
+           GROUP BY u.id 
+           ORDER BY u.created_at DESC`
+        ).all();
+
+        return new Response(JSON.stringify({
+          success: true,
+          users: users || []
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Fetch users error: ' + err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // POST /api/admin/reset-password - Reset/Change User Password
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/reset-password' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const adminKey = body.adminKey || request.headers.get('X-Admin-Key');
+        if (adminKey !== 'Shahid5@74') {
+          return new Response(JSON.stringify({ error: 'Admin access denied.' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const userId = body.userId;
+        const newPassword = (body.newPassword || '').trim();
+
+        if (!userId || !newPassword || newPassword.length < 6) {
+          return new Response(JSON.stringify({ error: 'User ID aur naya password (kam az kam 6 characters) lazmi hain.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const newHash = await hashPassword(newPassword);
+        await env.DB.prepare(
+          "UPDATE users SET password_hash = ? WHERE id = ?"
+        ).bind(newHash, userId).run();
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Password kamyabi se reset kar diya gaya hai!'
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Reset password error: ' + err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // POST /api/admin/delete-user - Delete User & Wipe Emails
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/delete-user' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const adminKey = body.adminKey || request.headers.get('X-Admin-Key');
+        if (adminKey !== 'Shahid5@74') {
+          return new Response(JSON.stringify({ error: 'Admin access denied.' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const userId = body.userId;
+        if (!userId) {
+          return new Response(JSON.stringify({ error: 'Missing userId' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const user = await env.DB.prepare("SELECT email FROM users WHERE id = ?").bind(userId).first();
+        if (!user) {
+          return new Response(JSON.stringify({ error: 'User nahi mila.' }), {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Delete all emails belonging to this recipient & delete the user record
+        await env.DB.prepare("DELETE FROM emails WHERE recipient = ?").bind(user.email.toLowerCase()).run();
+        await env.DB.prepare("DELETE FROM users WHERE id = ?").bind(userId).run();
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: `Mailbox '${user.email}' aur uski tamam emails kamyabi se delete kar di gayi hain!`
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Delete user error: ' + err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     return new Response("KhanPro Multi-User Mailbox API Engine Active", {
       headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
     });
