@@ -367,6 +367,40 @@
       </div>
     </div>
 
+    <!-- Master Admin Reset Password Modal -->
+    <div class="email-modal-overlay hidden" id="admin-reset-pwd-modal">
+      <div class="email-modal-content" style="max-width: 460px;">
+        <div class="email-modal-header">
+          <div>
+            <h3 style="font-size: 1.2rem; color: #fff; margin: 0;">
+              <i class="fa-solid fa-key text-accent"></i> Reset User Password
+            </h3>
+            <p id="reset-pwd-modal-user-info" style="font-size: 0.85rem; color: #38bdf8; margin: 4px 0 0 0;"></p>
+          </div>
+          <button class="btn-close-modal" id="btn-close-reset-pwd" style="background: transparent; border: none; color: #fff; font-size: 1.4rem; cursor: pointer;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="email-modal-body">
+          <form id="admin-reset-pwd-form">
+            <input type="hidden" id="reset-pwd-target-id">
+            <div class="form-group mb-3">
+              <label class="form-label" for="reset-pwd-input">Enter New Password (min 6 characters):</label>
+              <div class="input-addon-group password-input-wrap">
+                <span class="addon-prefix"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" id="reset-pwd-input" class="form-input" placeholder="New secure password" required minlength="6">
+                <button type="button" class="btn-toggle-eye" id="btn-toggle-reset-eye"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <div id="reset-pwd-alert" class="alert hidden mb-3"></div>
+            <button type="submit" class="btn btn-primary btn-glow w-100" id="btn-submit-reset-pwd">
+              <i class="fa-solid fa-floppy-disk"></i> Update Password Now
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- ======================================================== -->
     <!-- SECTION 3: CLUSTER & ADMIN CONTROL PANEL                 -->
     <!-- ======================================================== -->
@@ -446,6 +480,51 @@
                 </button>
               </div>
             </form>
+          </div>
+
+          <!-- Card: Live Registered Users & Mailbox Controls -->
+          <div class="admin-card glass-panel mb-4" id="admin-users-card" style="margin-bottom: 24px;">
+            <div class="card-head" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3><i class="fa-solid fa-users-gear text-primary"></i> Live Registered Mailboxes & Master Controls</h3>
+                <p class="card-desc" style="margin: 4px 0 0 0;">Har user ka account yahan live show hoga. Aap kisi bhi mail ka password reset kar sakte hain ya account delete kar sakte hain.</p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <span class="badge badge-success" id="admin-user-count-badge">0 Users</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-admin-refresh-users">
+                  <i class="fa-solid fa-rotate" id="admin-refresh-icon"></i> Refresh List
+                </button>
+              </div>
+            </div>
+
+            <div style="margin: 16px 0;">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="admin-user-search-input" class="form-input" placeholder="Search user by name or @khanpro.me email...">
+              </div>
+            </div>
+
+            <div class="table-responsive" style="margin-top: 12px; max-height: 400px; overflow-y: auto;">
+              <table class="data-table" id="admin-users-table">
+                <thead>
+                  <tr>
+                    <th># ID</th>
+                    <th>User Name</th>
+                    <th>Mailbox Address</th>
+                    <th>Emails Stored</th>
+                    <th>Created At</th>
+                    <th style="text-align: right;">Master Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted" style="padding: 24px;">
+                      <i class="fa-solid fa-spinner fa-spin"></i> Loading users from database...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div class="admin-grid">
