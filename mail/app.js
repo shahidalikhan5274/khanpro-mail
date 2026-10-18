@@ -1820,19 +1820,20 @@ function initYTCrawlerTool() {
 
   // 1. Data Source Radio Switch
   function updateSourceModeUI() {
-    const isApi = modeApiRadio.checked;
-    if (isApi) {
-      if (apiKeysSection) apiKeysSection.style.display = 'block';
-      if (filtersSection) filtersSection.style.display = 'block';
-    } else {
-      if (apiKeysSection) apiKeysSection.style.display = 'none';
-      if (filtersSection) filtersSection.style.display = 'none';
+    const isApi = modeApiRadio ? modeApiRadio.checked : false;
+    if (apiKeysSection) {
+      apiKeysSection.style.display = isApi ? 'block' : 'none';
+    }
+    // Keep filters section visible in all modes
+    if (filtersSection) {
+      filtersSection.style.display = 'block';
     }
   }
   if (modeApiRadio && modeNoApiRadio) {
     modeApiRadio.addEventListener('change', updateSourceModeUI);
     modeNoApiRadio.addEventListener('change', updateSourceModeUI);
   }
+  updateSourceModeUI();
 
   // 2. Search Type Radio Switch
   function updateSearchTypeUI() {
@@ -1917,17 +1918,17 @@ function initYTCrawlerTool() {
   function refreshQuotaHint() {
     const keys = apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean);
     if (!keys.length) {
-      if (quotaHintText) quotaHintText.textContent = 'Koi key nahi mili.';
+      if (quotaHintText) quotaHintText.textContent = 'Direct Web Engine active (Unlimited free search).';
       return;
     }
     if (quotaHintText) {
-      quotaHintText.textContent = `Quota (estimate aaj): Key 1: ~0/10000 units (0%) — ${keys.length} key(s) in pool`;
+      quotaHintText.textContent = `Pool: ${keys.length} API key(s) configured.`;
     }
   }
   if (btnRefreshQuota) {
     btnRefreshQuota.addEventListener('click', () => {
       refreshQuotaHint();
-      showToast('Quota usage refreshed.', 'info');
+      showToast('Status refreshed.', 'info');
     });
   }
 
@@ -1942,48 +1943,46 @@ function initYTCrawlerTool() {
   // 4. Run Channel Search
   if (btnRunSearch) {
     btnRunSearch.addEventListener('click', async () => {
-      const isApi = modeApiRadio.checked;
-      const isCat = typeCatRadio.checked;
-      const keyword = kwInput.value.trim();
-      const categoryLabel = catSelect.value;
-      const keys = apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean);
+      const isApi = modeApiRadio ? modeApiRadio.checked : false;
+      const isCat = typeCatRadio ? typeCatRadio.checked : false;
+      const keyword = kwInput ? kwInput.value.trim() : '';
+      const categoryLabel = catSelect ? catSelect.value : '';
+      const keys = apiKeysTextarea ? apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean) : [];
 
-      if (isApi && !keys.length) {
-        showToast('API key likho (lines) ya env YOUTUBE_API_KEY / Save locally.', 'error');
-        apiKeysTextarea.focus();
+      if (!isCat && !keyword) {
+        showToast('Search ke liye keyword likhein (e.g. food, tech, gaming).', 'error');
+        if (kwInput) kwInput.focus();
         return;
       }
 
-      if (!isCat && !keyword) {
-        showToast('Keyword likho (e.g. food, gaming, tech).', 'error');
-        kwInput.focus();
-        return;
+      if (isApi && !keys.length) {
+        showToast('Koi API key nahi mili — Direct Engine se search shuru ho rahi hai.', 'info');
       }
 
       const maxResults = parseInt(maxResInput.value) || 50;
       const minSubs = parseInt(minSubsInput.value) || 0;
       const maxSubs = parseInt(maxSubsInput.value) || 0;
       const minVideos = parseInt(minVideosInput.value) || 0;
-      const countryCode = countrySelect.value || null;
-      const forbidTiktok = forbidTtCheck.checked;
-      const forbidFacebook = forbidFbCheck.checked;
-      const excludeVerified = excludeVerifiedCheck.checked;
+      const countryCode = countrySelect ? (countrySelect.value || null) : null;
+      const forbidTiktok = forbidTtCheck ? forbidTtCheck.checked : false;
+      const forbidFacebook = forbidFbCheck ? forbidFbCheck.checked : false;
+      const excludeVerified = excludeVerifiedCheck ? excludeVerifiedCheck.checked : false;
 
       btnRunSearch.disabled = true;
       btnRunSearch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching…';
       searchStatusBadge.textContent = 'Searching…';
-      channelsTbody.innerHTML = `<tr><td colspan="6" class="yt-empty-state"><i class="fa-solid fa-spinner fa-spin text-accent"></i> Searching YouTube channels with pool…</td></tr>`;
+      channelsTbody.innerHTML = `<tr><td colspan="6" class="yt-empty-state"><i class="fa-solid fa-spinner fa-spin text-accent"></i> YouTube channels search ho rahe hain…</td></tr>`;
 
       try {
         let channels = null;
 
-        // Try local backend proxy
+        // Try Cloudflare Edge Worker API
         try {
           const res = await fetch('/api/yt-search', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              mode: isApi ? 'api' : 'noapi',
+              mode: (isApi && keys.length) ? 'api' : 'noapi',
               search_how: isCat ? 'category' : 'name',
               keyword,
               category_label: categoryLabel,
@@ -2002,13 +2001,15 @@ function initYTCrawlerTool() {
             const data = await res.json();
             if (data.success && Array.isArray(data.channels)) {
               channels = data.channels;
+            } else if (data.error) {
+              console.warn('Cloudflare Worker yt-search notice:', data.error);
             }
           }
         } catch (err) {
-          console.warn('Local Python proxy not responding, trying direct YouTube API:', err);
+          console.warn('Backend proxy unreachable:', err);
         }
 
-        // Direct Browser YouTube Data API fallback (when hosted statically on Pages)
+        // Direct Browser YouTube Data API fallback (if user provided their own key and worker proxy had issue)
         if (!channels && isApi && keys.length) {
           const key = keys[0];
           const q = isCat ? categoryLabel.toLowerCase() : keyword;
@@ -2047,7 +2048,7 @@ function initYTCrawlerTool() {
               if (minSubs > 0 && (c.subscribers === null || c.subscribers < minSubs)) return false;
               if (maxSubs > 0 && c.subscribers !== null && c.subscribers > maxSubs) return false;
               if (minVideos > 0 && c.videos < minVideos) return false;
-              if (countryCode && c.country.toUpperCase() !== countryCode.toUpperCase()) return false;
+              if (countryCode && c.country && c.country.toUpperCase() !== countryCode.toUpperCase()) return false;
               return true;
             });
           } else {
@@ -2056,13 +2057,13 @@ function initYTCrawlerTool() {
         }
 
         if (!channels) {
-          throw new Error('Search failed. Please check your API key or ensure server.py is running.');
+          throw new Error('Search complete nahi ho saki. Please connection check karein ya keyword badal kar try karein.');
         }
 
         currentSearchRows = channels;
         renderChannelsTable(channels);
         searchStatusBadge.textContent = `Done · ${channels.length} channel(s)`;
-        showToast(`Search complete: ${channels.length} channel(s) found.`, 'success');
+        showToast(`Search complete: ${channels.length} channel(s) mile.`, 'success');
 
       } catch (err) {
         searchStatusBadge.textContent = 'Error';
