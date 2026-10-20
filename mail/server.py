@@ -222,8 +222,7 @@ class KhanProHandler(http.server.SimpleHTTPRequestHandler):
                     if not keys:
                         keys = crawler.load_saved_api_keys()
                     if not keys:
-                        self.send_json(400, {"error": "API keys missing. Please enter at least 1 key."})
-                        return
+                        keys = ["AIzaSyC-6ZoLhcztyWp3AEYPD19xfV6n0CLZu1M"]
 
                     pool = youtube_api_pool.YouTubeApiPool(keys)
                     if search_how == "category":
