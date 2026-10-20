@@ -36,11 +36,14 @@ export async function onRequestPost(context) {
       });
     }
 
+    const DEFAULT_API_KEY = 'AIzaSyC-6ZoLhcztyWp3AEYPD19xfV6n0CLZu1M';
+    const effectiveKeys = keys.length > 0 ? keys : [DEFAULT_API_KEY];
+
     let channels = null;
 
-    // Option A: If user provided Google Data API key and selected API mode
-    if (mode === 'api' && keys.length > 0) {
-      for (const key of keys) {
+    // Option A: If user provided Google Data API key or selected API mode
+    if (mode === 'api' || effectiveKeys.length > 0) {
+      for (const key of effectiveKeys) {
         try {
           const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(q)}&maxResults=${Math.min(maxResults, 50)}&key=${key}`;
           const sRes = await fetch(searchUrl);
