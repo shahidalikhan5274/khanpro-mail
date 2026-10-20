@@ -140,18 +140,26 @@ const state = new EngineState();
 // UI INITIALIZATION & EVENT BINDINGS
 // ===================================================================
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation();
-  initPermissionGates();
-  initTabs();
-  initWebmailSystem();
-  initAdminControls();
-  initAdminUserManagement();
-  initSimulator();
-  initDirectory();
-  initToolsModals();
-  initYTCrawlerTool();
-  updateUI();
-  syncCloudflareDestinations();
+  const safeInit = (name, fn) => {
+    try {
+      if (typeof fn === 'function') fn();
+    } catch (err) {
+      console.warn(`[Init] Warning in ${name}:`, err);
+    }
+  };
+
+  safeInit('Navigation', initNavigation);
+  safeInit('ToolsModals', initToolsModals);
+  safeInit('PermissionGates', initPermissionGates);
+  safeInit('Tabs', initTabs);
+  safeInit('WebmailSystem', initWebmailSystem);
+  safeInit('AdminControls', initAdminControls);
+  safeInit('AdminUserManagement', initAdminUserManagement);
+  safeInit('Simulator', initSimulator);
+  safeInit('Directory', initDirectory);
+  safeInit('YTCrawlerTool', initYTCrawlerTool);
+  safeInit('UpdateUI', updateUI);
+  safeInit('SyncCF', syncCloudflareDestinations);
 });
 
 async function syncCloudflareDestinations() {
@@ -290,8 +298,10 @@ function initNavigation() {
   const quickActivate = document.getElementById('quick-activate-btn');
   if (quickActivate) {
     quickActivate.addEventListener('click', () => {
-      document.getElementById('student-mail').scrollIntoView({ behavior: 'smooth' });
-      document.getElementById('student-prefix').focus();
+      const studentMail = document.getElementById('student-mail');
+      const studentPrefix = document.getElementById('student-prefix');
+      if (studentMail) studentMail.scrollIntoView({ behavior: 'smooth' });
+      if (studentPrefix) studentPrefix.focus();
     });
   }
 }
@@ -363,9 +373,11 @@ function initActivationForm() {
   });
 
   // Prefix input cleanup
-  prefixInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9.-]/g, '');
-  });
+  if (prefixInput) {
+    prefixInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9.-]/g, '');
+    });
+  }
 
   // Check Cloudflare Verification Status helper
   async function checkDestinationStatus(email, silent = false) {
@@ -532,28 +544,35 @@ function initActivationForm() {
   });
 
   // Copy Email Button
-  btnCopyEmail.addEventListener('click', () => {
-    navigator.clipboard.writeText(assignedEmailSpan.textContent).then(() => {
-      showToast('Copied student email to clipboard!', 'success');
+  if (btnCopyEmail && assignedEmailSpan) {
+    btnCopyEmail.addEventListener('click', () => {
+      navigator.clipboard.writeText(assignedEmailSpan.textContent).then(() => {
+        showToast('Copied student email to clipboard!', 'success');
+      });
     });
-  });
+  }
 
   // Activate Another Button
-  btnActivateAnother.addEventListener('click', () => {
-    form.reset();
-    form.classList.remove('hidden');
-    successCard.classList.add('hidden');
-    if (cfStatusBox) cfStatusBox.classList.add('hidden');
-    customGmailVerified = false;
-    prefixInput.focus();
-  });
+  if (btnActivateAnother && form) {
+    btnActivateAnother.addEventListener('click', () => {
+      form.reset();
+      form.classList.remove('hidden');
+      if (successCard) successCard.classList.add('hidden');
+      if (cfStatusBox) cfStatusBox.classList.add('hidden');
+      customGmailVerified = false;
+      if (prefixInput) prefixInput.focus();
+    });
+  }
 
   // Test in Simulator Button
-  btnTestInSimulator.addEventListener('click', () => {
-    document.getElementById('tab-btn-simulator').click();
-    const simSelect = document.getElementById('sim-target-select');
-    simSelect.value = assignedEmailSpan.textContent;
-  });
+  if (btnTestInSimulator && assignedEmailSpan) {
+    btnTestInSimulator.addEventListener('click', () => {
+      const simTab = document.getElementById('tab-btn-simulator');
+      if (simTab) simTab.click();
+      const simSelect = document.getElementById('sim-target-select');
+      if (simSelect) simSelect.value = assignedEmailSpan.textContent;
+    });
+  }
 }
 
 // ===================================================================
@@ -568,88 +587,104 @@ function initAdminControls() {
   const bulkSingleClusterWrap = document.getElementById('bulk-single-cluster-wrap');
 
   // Add Cluster with Cloudflare auto-verification
-  addClusterForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = newClusterInput.value.trim().toLowerCase();
-    if (email && state.addCluster(email)) {
-      newClusterInput.value = '';
-      try {
-        const cfRes = await fetch('/api/send-verification', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const cfData = await cfRes.json();
-        if (cfData.success) {
-          showToast(`Cluster added! Cloudflare verification email sent to ${email}`, 'success');
+  if (addClusterForm && newClusterInput) {
+    addClusterForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = newClusterInput.value.trim().toLowerCase();
+      if (email && state.addCluster(email)) {
+        newClusterInput.value = '';
+        try {
+          const cfRes = await fetch('/api/send-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const cfData = await cfRes.json();
+          if (cfData.success) {
+            showToast(`Cluster added! Cloudflare verification email sent to ${email}`, 'success');
+          }
+        } catch (err) {
+          console.warn('CF verification notice:', err);
         }
-      } catch (err) {
-        console.warn('CF verification notice:', err);
       }
-    }
-  });
+    });
+  }
 
   // Bulk Mode Toggle
-  bulkDistMode.addEventListener('change', () => {
-    if (bulkDistMode.value === 'single-cluster') {
-      bulkSingleClusterWrap.classList.remove('hidden');
-    } else {
-      bulkSingleClusterWrap.classList.add('hidden');
-    }
-  });
+  if (bulkDistMode && bulkSingleClusterWrap) {
+    bulkDistMode.addEventListener('change', () => {
+      if (bulkDistMode.value === 'single-cluster') {
+        bulkSingleClusterWrap.classList.remove('hidden');
+      } else {
+        bulkSingleClusterWrap.classList.add('hidden');
+      }
+    });
+  }
 
   // Bulk Generator Run
-  bulkForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const prefix = document.getElementById('bulk-prefix').value.trim();
-    const start = parseInt(document.getElementById('bulk-start').value, 10);
-    const end = parseInt(document.getElementById('bulk-end').value, 10);
-    const mode = bulkDistMode.value;
+  if (bulkForm) {
+    bulkForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const prefixEl = document.getElementById('bulk-prefix');
+      const startEl = document.getElementById('bulk-start');
+      const endEl = document.getElementById('bulk-end');
+      const targetSingleEl = document.getElementById('bulk-target-cluster');
+      if (!prefixEl || !startEl || !endEl) return;
 
-    if (isNaN(start) || isNaN(end) || start > end) {
-      showToast('Invalid roll number range!', 'error');
-      return;
-    }
+      const prefix = prefixEl.value.trim();
+      const start = parseInt(startEl.value, 10);
+      const end = parseInt(endEl.value, 10);
+      const mode = bulkDistMode ? bulkDistMode.value : 'round-robin';
 
-    if (end - start > 500) {
-      showToast('Max bulk batch is 500 students per run!', 'error');
-      return;
-    }
-
-    if (state.clusters.length === 0) {
-      showToast('No active Gmail clusters available!', 'error');
-      return;
-    }
-
-    let createdCount = 0;
-    const targetSingle = document.getElementById('bulk-target-cluster').value;
-
-    for (let i = start; i <= end; i++) {
-      const studentPrefix = `${prefix}${i}`;
-      let assignedGmail = '';
-
-      if (mode === 'single-cluster') {
-        assignedGmail = targetSingle;
-      } else {
-        // Round-robin distribution
-        const clusterIndex = (i - start) % state.clusters.length;
-        assignedGmail = state.clusters[clusterIndex].email;
+      if (isNaN(start) || isNaN(end) || start > end) {
+        showToast('Invalid roll number range!', 'error');
+        return;
       }
 
-      state.addMapping(studentPrefix, assignedGmail);
-      createdCount++;
-    }
+      if (end - start > 500) {
+        showToast('Max bulk batch is 500 students per run!', 'error');
+        return;
+      }
 
-    showToast(`Successfully batch created ${createdCount} student emails!`, 'success');
-  });
+      if (state.clusters.length === 0) {
+        showToast('No active Gmail clusters available!', 'error');
+        return;
+      }
+
+      let createdCount = 0;
+      const targetSingle = targetSingleEl ? targetSingleEl.value : '';
+
+      for (let i = start; i <= end; i++) {
+        const studentPrefix = `${prefix}${i}`;
+        let assignedGmail = '';
+
+        if (mode === 'single-cluster') {
+          assignedGmail = targetSingle;
+        } else {
+          // Round-robin distribution
+          const clusterIndex = (i - start) % state.clusters.length;
+          assignedGmail = state.clusters[clusterIndex].email;
+        }
+
+        state.addMapping(studentPrefix, assignedGmail);
+        createdCount++;
+      }
+
+      showToast(`Successfully batch created ${createdCount} student emails!`, 'success');
+    });
+  }
 
   // Copy Production Worker Code
-  copyWorkerBtn.addEventListener('click', () => {
-    const code = document.getElementById('code-snippet-worker').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      showToast('Copied Cloudflare Worker script!', 'success');
+  if (copyWorkerBtn) {
+    copyWorkerBtn.addEventListener('click', () => {
+      const codeEl = document.getElementById('code-snippet-worker');
+      if (codeEl) {
+        navigator.clipboard.writeText(codeEl.textContent).then(() => {
+          showToast('Copied Cloudflare Worker script!', 'success');
+        });
+      }
     });
-  });
+  }
 }
 
 // ===================================================================
@@ -660,11 +695,16 @@ function initSimulator() {
   const terminal = document.getElementById('sim-trace-terminal');
   const statusBadge = document.getElementById('trace-status-badge');
 
+  if (!runBtn || !terminal || !statusBadge) return;
+
   runBtn.addEventListener('click', () => {
     const targetSelect = document.getElementById('sim-target-select');
-    const targetEmail = targetSelect.value;
-    const sender = document.getElementById('sim-sender').value;
-    const subject = document.getElementById('sim-subject').value;
+    const senderEl = document.getElementById('sim-sender');
+    const subjectEl = document.getElementById('sim-subject');
+
+    const targetEmail = targetSelect ? targetSelect.value : '';
+    const sender = senderEl ? senderEl.value : 'sender@example.com';
+    const subject = subjectEl ? subjectEl.value : 'Test Email';
 
     if (!targetEmail) {
       showToast('No active student email selected!', 'error');
@@ -717,36 +757,42 @@ function initDirectory() {
   const exportBtn = document.getElementById('btn-export-csv');
   const refreshBtn = document.getElementById('btn-refresh-directory');
 
-  searchInput.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    renderDirectoryTable(q);
-  });
-
-  refreshBtn.addEventListener('click', () => {
-    renderDirectoryTable(searchInput.value.toLowerCase());
-    showToast('Directory refreshed!', 'success');
-  });
-
-  exportBtn.addEventListener('click', () => {
-    if (state.mappings.length === 0) {
-      showToast('No mappings to export!', 'error');
-      return;
-    }
-
-    let csvContent = "data:text/csv;charset=utf-8,Roll_Prefix,Student_Email,Assigned_Gmail,Date_Activated,Status\n";
-    state.mappings.forEach(m => {
-      csvContent += `${m.prefix},${m.email},${m.destination},${m.date},${m.status}\n`;
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      renderDirectoryTable(q);
     });
+  }
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `khanpro_student_emails_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('CSV downloaded successfully!', 'success');
-  });
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      renderDirectoryTable(searchInput ? searchInput.value.toLowerCase() : '');
+      showToast('Directory refreshed!', 'success');
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      if (state.mappings.length === 0) {
+        showToast('No mappings to export!', 'error');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,Roll_Prefix,Student_Email,Assigned_Gmail,Date_Activated,Status\n";
+      state.mappings.forEach(m => {
+        csvContent += `${m.prefix},${m.email},${m.destination},${m.date},${m.status}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `khanpro_student_emails_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV downloaded successfully!', 'success');
+    });
+  }
 }
 
 // ===================================================================
@@ -755,7 +801,8 @@ function initDirectory() {
 function initToolsModals() {
   // Modal Triggers
   document.querySelectorAll('[data-tool]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const tool = btn.getAttribute('data-tool');
       if (tool === 'password-modal') openModal('modal-password');
       if (tool === 'qr-modal') {
@@ -785,7 +832,8 @@ function initToolsModals() {
 
   // Modal Closers
   document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const modalId = btn.getAttribute('data-close');
       closeModal(modalId);
     });
@@ -795,8 +843,19 @@ function initToolsModals() {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
         overlay.classList.add('hidden');
+        document.body.style.overflow = '';
       }
     });
+  });
+
+  // ESC key to close open modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => {
+        modal.classList.add('hidden');
+      });
+      document.body.style.overflow = '';
+    }
   });
 
   // Tool 1: Password Generator Logic
@@ -807,11 +866,16 @@ function initToolsModals() {
   const btnPwdCopy = document.getElementById('btn-pwd-copy');
 
   function generatePassword() {
+    if (!pwdLen || !pwdOutput) return;
     const len = parseInt(pwdLen.value, 10);
-    const upper = document.getElementById('pwd-upper').checked ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '';
-    const lower = document.getElementById('pwd-lower').checked ? 'abcdefghijklmnopqrstuvwxyz' : '';
-    const nums = document.getElementById('pwd-nums').checked ? '0123456789' : '';
-    const syms = document.getElementById('pwd-symbols').checked ? '!@#$%^&*()_+-=[]{}|;:,.<>?' : '';
+    const upperEl = document.getElementById('pwd-upper');
+    const lowerEl = document.getElementById('pwd-lower');
+    const numsEl = document.getElementById('pwd-nums');
+    const symsEl = document.getElementById('pwd-symbols');
+    const upper = (upperEl && upperEl.checked) ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '';
+    const lower = (lowerEl && lowerEl.checked) ? 'abcdefghijklmnopqrstuvwxyz' : '';
+    const nums = (numsEl && numsEl.checked) ? '0123456789' : '';
+    const syms = (symsEl && symsEl.checked) ? '!@#$%^&*()_+-=[]{}|;:,.<>?' : '';
     
     let chars = upper + lower + nums + syms;
     if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -825,16 +889,20 @@ function initToolsModals() {
     pwdOutput.value = res;
   }
 
-  pwdLen.addEventListener('input', () => {
-    pwdLenVal.textContent = pwdLen.value;
-    generatePassword();
-  });
-  btnPwdGen.addEventListener('click', generatePassword);
-  btnPwdCopy.addEventListener('click', () => {
-    navigator.clipboard.writeText(pwdOutput.value).then(() => {
-      showToast('Copied password to clipboard!', 'success');
+  if (pwdLen) {
+    pwdLen.addEventListener('input', () => {
+      if (pwdLenVal) pwdLenVal.textContent = pwdLen.value;
+      generatePassword();
     });
-  });
+  }
+  if (btnPwdGen) btnPwdGen.addEventListener('click', generatePassword);
+  if (btnPwdCopy && pwdOutput) {
+    btnPwdCopy.addEventListener('click', () => {
+      navigator.clipboard.writeText(pwdOutput.value).then(() => {
+        showToast('Copied password to clipboard!', 'success');
+      });
+    });
+  }
   generatePassword();
 
   // Tool 2: QR Code Generator Logic
@@ -842,31 +910,45 @@ function initToolsModals() {
   const qrImage = document.getElementById('qr-image');
 
   function updateQRCode() {
-    const text = qrInput.value.trim() || 'https://khanpro.me';
+    if (!qrImage) return;
+    const text = (qrInput && qrInput.value.trim()) || 'https://khanpro.me';
     qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
   }
-  qrInput.addEventListener('input', updateQRCode);
+  if (qrInput) qrInput.addEventListener('input', updateQRCode);
 
   // Tool 3: Text Formatter Logic
   const textInput = document.getElementById('text-input');
-  document.getElementById('btn-text-lower').addEventListener('click', () => {
-    textInput.value = textInput.value.toLowerCase();
-  });
-  document.getElementById('btn-text-upper').addEventListener('click', () => {
-    textInput.value = textInput.value.toUpperCase();
-  });
-  document.getElementById('btn-text-clean').addEventListener('click', () => {
-    const lines = textInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    const unique = [...new Set(lines)];
-    textInput.value = unique.join('\n');
-    showToast(`Cleaned & removed duplicates (${unique.length} lines)`, 'success');
-  });
-  document.getElementById('btn-text-append').addEventListener('click', () => {
-    const lines = textInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    const appended = lines.map(l => l.includes('@') ? l : `${l}@khanpro.me`);
-    textInput.value = appended.join('\n');
-    showToast('Appended @khanpro.me to lines!', 'success');
-  });
+  const btnTextLower = document.getElementById('btn-text-lower');
+  const btnTextUpper = document.getElementById('btn-text-upper');
+  const btnTextClean = document.getElementById('btn-text-clean');
+  const btnTextAppend = document.getElementById('btn-text-append');
+
+  if (btnTextLower && textInput) {
+    btnTextLower.addEventListener('click', () => {
+      textInput.value = textInput.value.toLowerCase();
+    });
+  }
+  if (btnTextUpper && textInput) {
+    btnTextUpper.addEventListener('click', () => {
+      textInput.value = textInput.value.toUpperCase();
+    });
+  }
+  if (btnTextClean && textInput) {
+    btnTextClean.addEventListener('click', () => {
+      const lines = textInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const unique = [...new Set(lines)];
+      textInput.value = unique.join('\n');
+      showToast(`Cleaned & removed duplicates (${unique.length} lines)`, 'success');
+    });
+  }
+  if (btnTextAppend && textInput) {
+    btnTextAppend.addEventListener('click', () => {
+      const lines = textInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const appended = lines.map(l => l.includes('@') ? l : `${l}@khanpro.me`);
+      textInput.value = appended.join('\n');
+      showToast('Appended @khanpro.me to lines!', 'success');
+    });
+  }
 }
 
 // Tool 4: TempMail Disposable Generator Logic
@@ -1546,12 +1628,18 @@ function initCheckerTool() {
 
 function openModal(id) {
   const m = document.getElementById(id);
-  if (m) m.classList.remove('hidden');
+  if (m) {
+    m.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function closeModal(id) {
   const m = document.getElementById(id);
-  if (m) m.classList.add('hidden');
+  if (m) {
+    m.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
 }
 
 // ===================================================================
