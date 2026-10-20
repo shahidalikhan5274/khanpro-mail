@@ -1940,6 +1940,8 @@ function initYTCrawlerTool() {
   }
 
   // 3. Load Keys & Config
+  const DEFAULT_YT_KEY = 'AIzaSyC-6ZoLhcztyWp3AEYPD19xfV6n0CLZu1M';
+
   async function loadConfig() {
     try {
       const res = await fetch('/api/yt-config');
@@ -1964,7 +1966,10 @@ function initYTCrawlerTool() {
     const savedLocal = localStorage.getItem('yt_crowler_keys');
     if (savedLocal && apiKeysTextarea) {
       apiKeysTextarea.value = savedLocal;
+    } else if (apiKeysTextarea && !apiKeysTextarea.value.trim()) {
+      apiKeysTextarea.value = DEFAULT_YT_KEY;
     }
+    refreshQuotaHint();
   }
   loadConfig();
 
@@ -2035,16 +2040,16 @@ function initYTCrawlerTool() {
       const isCat = typeCatRadio ? typeCatRadio.checked : false;
       const keyword = kwInput ? kwInput.value.trim() : '';
       const categoryLabel = catSelect ? catSelect.value : '';
-      const keys = apiKeysTextarea ? apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean) : [];
+      let keys = apiKeysTextarea ? apiKeysTextarea.value.split('\n').map(k => k.trim()).filter(Boolean) : [];
+      if (!keys.length) {
+        keys = [DEFAULT_YT_KEY];
+        if (apiKeysTextarea) apiKeysTextarea.value = DEFAULT_YT_KEY;
+      }
 
       if (!isCat && !keyword) {
         showToast('Search ke liye keyword likhein (e.g. food, tech, gaming).', 'error');
         if (kwInput) kwInput.focus();
         return;
-      }
-
-      if (isApi && !keys.length) {
-        showToast('Koi API key nahi mili — Direct Engine se search shuru ho rahi hai.', 'info');
       }
 
       const maxResults = parseInt(maxResInput.value) || 50;
