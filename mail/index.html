@@ -43,6 +43,9 @@
         <a href="https://wa.me/923227174200?text=Hello%20Shahid%20Bhai,%20I%20am%20interested%20in%20the%20ICT%20Complete%20Trading%20Course." target="_blank" class="nav-link special-link" data-nav="ict-course" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.2)); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981 !important;">
           <i class="fa-solid fa-graduation-cap"></i> ICT Trading Course <span class="badge-hot" style="background: #10b981;">Open</span>
         </a>
+        <a href="javascript:void(0)" class="nav-link special-link btn-trigger-internet-hisab" data-nav="internet-hisab" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 88, 12, 0.2)); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b !important; cursor: pointer;">
+          <i class="fa-solid fa-calculator"></i> Internet Hisab <span class="badge-hot" style="background: #f59e0b; color: #000;"><i class="fa-solid fa-lock"></i> Lock</span>
+        </a>
         <a href="#desktop-apps" class="nav-link" data-nav="desktop-apps"><i class="fa-solid fa-laptop-code"></i> Desktop Apps</a>
         <a href="#student-mail" class="nav-link special-link" data-nav="student-mail">
           <i class="fa-solid fa-envelope-circle-check"></i> Student Mail Portal
@@ -93,6 +96,9 @@
           </a>
           <a href="https://wa.me/923227174200?text=Hello%20Shahid%20Bhai,%20I%20am%20interested%20in%20joining%20the%20ICT%20Complete%20Trading%20Course." target="_blank" class="btn btn-glass btn-lg" id="hero-cta-course" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.3)); border: 1px solid rgba(16, 185, 129, 0.5); color: #10b981;">
             <i class="fa-brands fa-whatsapp"></i> ICT Course (0322-7174200)
+          </a>
+          <a href="javascript:void(0)" class="btn btn-glass btn-lg btn-trigger-internet-hisab" id="hero-cta-hisab" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 88, 12, 0.25)); border: 1px solid rgba(245, 158, 11, 0.45); color: #f59e0b; cursor: pointer;">
+            <i class="fa-solid fa-calculator"></i> Internet Hisab <i class="fa-solid fa-lock" style="font-size: 0.85em; opacity: 0.85;"></i>
           </a>
           <a href="#tools" class="btn btn-glass btn-lg" id="hero-cta-tools">
             <i class="fa-solid fa-compass"></i> Explore All Tools
@@ -616,6 +622,24 @@
             </div>
           </div>
 
+          <!-- Tool Card: Internet Hisab Kitab (Password Locked) -->
+          <div class="tool-card featured" id="card-tool-hisab" style="border: 1px solid rgba(245, 158, 11, 0.45); box-shadow: 0 0 25px rgba(245, 158, 11, 0.15); background: linear-gradient(180deg, rgba(35, 23, 9, 0.95), rgba(18, 12, 5, 0.98));">
+            <div class="tool-card-top">
+              <div class="tool-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #07090e;"><i class="fa-solid fa-calculator"></i></div>
+              <span class="tool-badge" style="background: linear-gradient(90deg, #f59e0b, #ef4444); color: #000; font-weight: 700;"><i class="fa-solid fa-lock"></i> Protected</span>
+            </div>
+            <h3 class="tool-title" style="color: #fff;">Internet Hisab Kitab</h3>
+            <p class="tool-desc">Personal internet customer billing, monthly dues, ledger, and accounting manager. Protected with private security PIN.</p>
+            <div class="tool-meta" style="margin-bottom: 12px;">
+              <span class="tool-tag" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35);"><i class="fa-solid fa-shield-halved"></i> Private Tool</span>
+              <span class="tool-tag" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35);">Netlify App</span>
+              <span class="tool-tag" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.35);">PIN Protected</span>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm tool-btn btn-trigger-internet-hisab" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #07090e; font-weight: 700; width: 100%;">
+              <i class="fa-solid fa-lock"></i> Unlock & Open Internet Hisab <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </button>
+          </div>
+
           <!-- Tool Card 2: High-Entropy Password Generator -->
           <div class="tool-card" id="card-tool-password">
             <div class="tool-card-top">
@@ -878,6 +902,72 @@
     <!-- ======================================================== -->
     <!-- INTERACTIVE TOOL MODALS                                  -->
     <!-- ======================================================== -->
+
+    <!-- Modal: Internet Hisab Kitab (Password Locked) -->
+    <div class="modal-overlay hidden" id="modal-internet-hisab">
+      <div class="modal-box glass-panel" style="max-width: 440px; border-color: rgba(245, 158, 11, 0.35); box-shadow: 0 0 40px rgba(245, 158, 11, 0.15);">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 14px;">
+          <h3 style="color: #f59e0b; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-shield-halved"></i> Internet Hisab Lock
+          </h3>
+          <button class="modal-close" data-close="modal-internet-hisab">&times;</button>
+        </div>
+        <div class="modal-body" style="padding-top: 10px;">
+          <div style="text-align: center; margin-bottom: 22px;">
+            <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); display: inline-flex; align-items: center; justify-content: center; color: #f59e0b; font-size: 1.8rem; margin-bottom: 12px; box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">Private Tool Verification</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+              Yeh tool security password se locked hai.<br>Access karne ke liye apna 4-digit code enter karein.
+            </p>
+          </div>
+
+          <form id="form-unlock-internet-hisab" autocomplete="off">
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="input-hisab-pass" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Enter Security Code:
+              </label>
+              <div style="position: relative; display: flex; align-items: center;">
+                <span style="position: absolute; left: 14px; color: #f59e0b; font-size: 1rem; pointer-events: none;">
+                  <i class="fa-solid fa-key"></i>
+                </span>
+                <input 
+                  type="password" 
+                  id="input-hisab-pass" 
+                  class="form-input" 
+                  placeholder="••••" 
+                  maxlength="20"
+                  required 
+                  autocomplete="new-password"
+                  style="padding-left: 42px; padding-right: 44px; font-size: 1.3rem; letter-spacing: 5px; text-align: center; border-color: rgba(245, 158, 11, 0.35); background: rgba(15, 23, 42, 0.8);"
+                >
+                <button 
+                  type="button" 
+                  id="btn-toggle-hisab-pass" 
+                  style="position: absolute; right: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 4px;"
+                  title="Show / Hide"
+                >
+                  <i class="fa-solid fa-eye" id="icon-toggle-hisab-pass"></i>
+                </button>
+              </div>
+              <div id="hisab-pass-error" style="display: none; color: #f87171; font-size: 0.82rem; margin-top: 8px; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-exclamation"></i> <span>Ghalat password! Access denied.</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-secondary" data-close="modal-internet-hisab" style="flex: 1;">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary" id="btn-submit-unlock-hisab" style="flex: 2; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #07090e; font-weight: 700;">
+                <i class="fa-solid fa-lock-open"></i> Unlock & Open
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal 1: Password Generator -->
     <div class="modal-overlay hidden" id="modal-password">
@@ -1625,6 +1715,7 @@
         <ul>
           <li><a href="#home">Home</a></li>
           <li><a href="#tools">Web Tools</a></li>
+          <li><a href="javascript:void(0)" class="btn-trigger-internet-hisab"><i class="fa-solid fa-lock"></i> Internet Hisab</a></li>
           <li><a href="#student-mail">Student Mail Portal</a></li>
           <li><a href="#admin-panel">Cluster Admin</a></li>
         </ul>
