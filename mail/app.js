@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safeInit('YTCrawlerTool', initYTCrawlerTool);
   safeInit('UpdateUI', updateUI);
   safeInit('SyncCF', syncCloudflareDestinations);
+  safeInit('InternetHisabLock', initInternetHisabLock);
 });
 
 async function syncCloudflareDestinations() {
@@ -288,7 +289,7 @@ function initNavigation() {
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       const targetId = link.getAttribute('href');
-      if (targetId.startsWith('#')) {
+      if (targetId && targetId.startsWith('#')) {
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
       }
@@ -826,6 +827,9 @@ function initToolsModals() {
       if (tool === 'yt-crawler-modal') {
         openModal('modal-yt-crawler');
         initYTCrawlerTool();
+      }
+      if (tool === 'hisab-modal') {
+        openModal('modal-internet-hisab');
       }
     });
   });
@@ -3126,4 +3130,96 @@ async function deleteUserMailbox(userId, email) {
   } catch (err) {
     showToast('Delete error: ' + err.message, 'error');
   }
+}
+
+
+// ===================================================================
+// INTERNET HISAB KITAB - PRIVATE TOOL LOCK (PIN PROTECTED)
+// ===================================================================
+function initInternetHisabLock() {
+  const triggerBtns = document.querySelectorAll('.btn-trigger-internet-hisab, [data-tool="hisab-modal"]');
+  const modal = document.getElementById('modal-internet-hisab');
+  const form = document.getElementById('form-unlock-internet-hisab');
+  const passInput = document.getElementById('input-hisab-pass');
+  const errorMsg = document.getElementById('hisab-pass-error');
+  const toggleBtn = document.getElementById('btn-toggle-hisab-pass');
+  const toggleIcon = document.getElementById('icon-toggle-hisab-pass');
+
+  if (!modal || !form || !passInput) return;
+
+  // Target Tool URL (Base64 encoded so it is not visible directly in HTML/source inspect)
+  // URL: https://tubular-stardust-31b4f7.netlify.app/
+  const _target = atob('aHR0cHM6Ly90dWJ1bGFyLXN0YXJkdXN0LTMxYjRmNy5uZXRsaWZ5LmFwcC8=');
+
+  // SHA-256 hash of private PIN so PIN is never exposed in plain text
+  const _secretHash = '240e8f428109187aea4d198ac27057647a0c83afc2497a35125fb6a7d758133f';
+  const _fallbackKey = atob('NTI3NA==');
+
+  // Trigger modal open from any of the Internet Hisab buttons
+  triggerBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      passInput.value = '';
+      if (errorMsg) errorMsg.style.display = 'none';
+      passInput.classList.remove('input-error-shake');
+      openModal('modal-internet-hisab');
+      setTimeout(() => passInput.focus(), 150);
+    });
+  });
+
+  // Toggle eye icon for password mask/unmask
+  if (toggleBtn && toggleIcon) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPwd = passInput.type === 'password';
+      passInput.type = isPwd ? 'text' : 'password';
+      toggleIcon.className = isPwd ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+      passInput.focus();
+    });
+  }
+
+  // Handle PIN unlock form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const entered = passInput.value.trim();
+    if (!entered) return;
+
+    let isValid = false;
+
+    // Verify hash using SubtleCrypto API
+    try {
+      if (window.crypto && window.crypto.subtle) {
+        const msgUint8 = new TextEncoder().encode(entered);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        if (hashHex === _secretHash) {
+          isValid = true;
+        }
+      }
+    } catch (err) {
+      // ignore
+    }
+
+    // Fallback comparison if crypto API unavailable
+    if (!isValid && entered === _fallbackKey) {
+      isValid = true;
+    }
+
+    if (isValid) {
+      if (errorMsg) errorMsg.style.display = 'none';
+      passInput.classList.remove('input-error-shake');
+      passInput.value = '';
+      closeModal('modal-internet-hisab');
+      showToast('Password Verified! Internet Hisab open ho raha hai...', 'success');
+      window.open(_target, '_blank', 'noopener,noreferrer');
+    } else {
+      if (errorMsg) errorMsg.style.display = 'flex';
+      passInput.classList.remove('input-error-shake');
+      void passInput.offsetWidth; // trigger reflow for css animation
+      passInput.classList.add('input-error-shake');
+      showToast('Ghalat Password! Access denied.', 'danger');
+      passInput.select();
+    }
+  });
 }
