@@ -3738,3 +3738,21 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   align-items: center;
 }
+
+/* Internet Hisab Kitab Animations & Styles */
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.input-error-shake {
+  animation: errorShake 0.4s ease-in-out !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.45) !important;
+}
+
+.btn-trigger-internet-hisab:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+}
