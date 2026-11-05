@@ -3148,8 +3148,8 @@ function initInternetHisabLock() {
   if (!modal || !form || !passInput) return;
 
   // Target Tool URL (Base64 encoded so it is not visible directly in HTML/source inspect)
-  // URL: https://tubular-stardust-31b4f7.netlify.app/
-  const _target = atob('aHR0cHM6Ly90dWJ1bGFyLXN0YXJkdXN0LTMxYjRmNy5uZXRsaWZ5LmFwcC8=');
+  // URL: https://shahidalikhan5274.github.io/internet/
+  const _target = atob('aHR0cHM6Ly9zaGFoaWRhbGlraGFuNTI3NC5naXRodWIuaW8vaW50ZXJuZXQv');
 
   // SHA-256 hash of private PIN so PIN is never exposed in plain text
   const _secretHash = '240e8f428109187aea4d198ac27057647a0c83afc2497a35125fb6a7d758133f';
